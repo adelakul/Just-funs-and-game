@@ -20,6 +20,8 @@ body{background:#050814;min-height:100vh;display:flex;justify-content:center;ali
 .shake{animation:shake 0.5s ease-in-out}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .float{animation:float 3s ease-in-out infinite}
+@keyframes popIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+.pop-in{animation:popIn 0.4s ease-out forwards}
 #music-player{position:fixed;bottom:15px;right:15px;background:rgba(10,16,32,0.95);border:2px solid #64d8ff;border-radius:12px;padding:10px 15px;font-family:'Courier New',monospace;font-size:12px;color:#8899aa;z-index:1000;max-width:250px}
 #music-player button{background:#1e3a5f;border:1px solid #64d8ff;color:#64d8ff;padding:6px 10px;margin:5px 2px 0 0;border-radius:6px;cursor:pointer;font-size:11px;font-weight:bold}
 #music-player button:hover{background:#3a5a7f;filter:brightness(1.2)}
@@ -123,6 +125,13 @@ window.firebaseOnDisconnect = onDisconnect;
 <text x="300" y="50" text-anchor="middle" fill="#ffe66d" font-size="16" font-weight="bold" id="round-info">ROUND 1/7</text>
 <text x="300" y="75" text-anchor="middle" fill="#8899aa" font-size="11" id="mode-display">MODE: --</text>
 <text id="countdown" x="550" y="65" text-anchor="end" fill="#ff6b6b" font-size="24" font-weight="bold"></text>
+</g>
+
+<!-- TIMER BAR -->
+<g id="timer-bar" display="none">
+<rect x="20" y="110" width="560" height="8" rx="4" fill="#1a2030" stroke="none"/>
+<rect id="timer-fill" x="20" y="110" width="560" height="8" rx="4" fill="#4ecdc4"/>
+<text id="timer-text" x="300" y="140" text-anchor="middle" fill="#8899aa" font-size="14">20.0s</text>
 </g>
 
 <!-- GAME AREA -->
@@ -229,7 +238,9 @@ let db = null, roomRef = null, roomCode = '', playerRole = null, localPlayer = 1
 let opponentConnected = false, roomUnsubscribe = null;
 let currentRoundLaunched = -1;
 let countdownInterval = null;
+let timerInterval = null;
 let currentPuzzle = null;
+let roundActive = false;
 
 const gameArea = document.getElementById('game-area');
 const svg = document.getElementById('game-canvas');
@@ -262,10 +273,12 @@ reactionStartTime: 0,
 reactionTimer: null,
 reactionFallback: null,
 early: false,
-startAt: 0
+startAt: 0,
+roundDuration: 20000,
+roundEndAt: 0
 };
 
-// ===== SEEDED RNG (synchronizes puzzles across devices) =====
+// ===== SEEDED RNG =====
 function createSeededRNG(seed){
 return function(){
 seed = (seed * 9301 + 49297) % 233280;
@@ -343,6 +356,10 @@ if(countdownInterval){
 clearInterval(countdownInterval);
 countdownInterval = null;
 }
+if(timerInterval){
+clearInterval(timerInterval);
+timerInterval = null;
+}
 if(gameState.reactionTimer) clearTimeout(gameState.reactionTimer);
 if(gameState.reactionFallback) clearTimeout(gameState.reactionFallback);
 gameState = {
@@ -365,17 +382,37 @@ reactionStartTime: 0,
 reactionTimer: null,
 reactionFallback: null,
 early: false,
-startAt: 0
+startAt: 0,
+roundDuration: 20000,
+roundEndAt: 0
 };
 currentRoundLaunched = -1;
 currentPuzzle = null;
+roundActive = false;
 clearGameArea();
+hideTimerBar();
 }
 
 function clearGameArea(){
 while(gameArea.firstChild){
 gameArea.removeChild(gameArea.firstChild);
 }
+}
+
+function showTimerBar(){
+document.getElementById('timer-bar').setAttribute('display','block');
+}
+function hideTimerBar(){
+document.getElementById('timer-bar').setAttribute('display','none');
+}
+function updateTimerBar(percent, text){
+const fill = document.getElementById('timer-fill');
+const txt = document.getElementById('timer-text');
+fill.setAttribute('width', Math.max(0, 560 * (percent / 100)));
+txt.textContent = text;
+if(percent < 30) fill.setAttribute('fill','#ff6b6b');
+else if(percent < 60) fill.setAttribute('fill','#ffe66d');
+else fill.setAttribute('fill','#4ecdc4');
 }
 
 // ===== SCREEN MANAGEMENT =====
@@ -389,6 +426,7 @@ if(el) el.setAttribute('display','none');
 if(!keepGameplay){
 document.getElementById('hud').setAttribute('display','none');
 document.getElementById('game-area').setAttribute('display','none');
+hideTimerBar();
 }
 if(id){
 const target = document.getElementById(id);
@@ -400,6 +438,7 @@ function showGameplay(){
 showScreen(null, true);
 document.getElementById('hud').setAttribute('display','block');
 document.getElementById('game-area').setAttribute('display','block');
+showTimerBar();
 }
 
 window.showHowToPlay = function(){
@@ -471,8 +510,8 @@ if(data.status === 'playing' && data.gameState){
 if(data.puzzle) currentPuzzle = data.puzzle;
 syncGameState(data.gameState);
 }
-if(data.status === 'round_end'){
-handleRoundResult(data);
+if(data.roundResult){
+handleRoundResult(data.roundResult);
 }
 if(data.status === 'match_end'){
 showMatchOver(data);
@@ -512,7 +551,7 @@ if(d.status === 'playing'){
 if(d.puzzle) currentPuzzle = d.puzzle;
 if(d.gameState) syncGameState(d.gameState);
 }
-if(d.status === 'round_end') handleRoundResult(d);
+if(d.roundResult) handleRoundResult(d.roundResult);
 if(d.status === 'match_end') showMatchOver(d);
 if(!d.host) showScreen('disconnected');
 });
@@ -551,6 +590,7 @@ gameState.myScore = 0;
 gameState.oppScore = 0;
 currentPuzzle = generatePuzzle(mode, 1);
 const startAt = Date.now() + 3000;
+const roundEndAt = startAt + gameState.roundDuration;
 window.firebaseUpdate(roomRef, {
 status: 'playing',
 gameState: {
@@ -559,9 +599,11 @@ round: 1,
 phase: 'countdown',
 p1Score: 0,
 p2Score: 0,
-startAt: startAt
+startAt: startAt,
+roundEndAt: roundEndAt
 },
-puzzle: currentPuzzle
+puzzle: currentPuzzle,
+roundResult: null
 });
 };
 
@@ -589,6 +631,7 @@ startCountdown();
 if(gameState.phase === 'playing' && gameState.round !== currentRoundLaunched){
 currentRoundLaunched = gameState.round;
 launchMode(gameState.mode);
+startRoundTimer();
 }
 }
 
@@ -612,12 +655,41 @@ gameState.phase = 'playing';
 if(gameState.round !== currentRoundLaunched){
 currentRoundLaunched = gameState.round;
 launchMode(gameState.mode);
+startRoundTimer();
 }
 if(playerRole === 'host'){
 window.firebaseUpdate(roomRef, { 'gameState/phase': 'playing' });
 }
 }
 }, 800);
+}
+
+function startRoundTimer(){
+if(timerInterval) clearInterval(timerInterval);
+roundActive = true;
+timerInterval = setInterval(() => {
+if(!roundActive) return;
+const now = Date.now();
+const remaining = Math.max(0, gameState.roundEndAt - now);
+const percent = (remaining / gameState.roundDuration) * 100;
+updateTimerBar(percent, (remaining / 1000).toFixed(1) + 's');
+
+if(remaining <= 0){
+clearInterval(timerInterval);
+timerInterval = null;
+roundActive = false;
+if(playerRole === 'host'){
+window.firebaseUpdate(roomRef, {
+roundResult: {
+winner: 0,
+p1Score: gameState.myScore,
+p2Score: gameState.oppScore,
+message: 'TIME UP!'
+}
+});
+}
+}
+}, 100);
 }
 
 function showLocalWin(){
@@ -627,7 +699,7 @@ flash.setAttribute('y','0');
 flash.setAttribute('width','600');
 flash.setAttribute('height','800');
 flash.setAttribute('fill','#4ecdc4');
-flash.setAttribute('opacity','0.3');
+flash.setAttribute('opacity','0.2');
 flash.style.pointerEvents = 'none';
 gameArea.appendChild(flash);
 
@@ -636,60 +708,118 @@ txt.setAttribute('x','300');
 txt.setAttribute('y','400');
 txt.setAttribute('text-anchor','middle');
 txt.setAttribute('fill','#fff');
-txt.setAttribute('font-size','48');
+txt.setAttribute('font-size','42');
 txt.setAttribute('font-weight','bold');
 txt.setAttribute('pointer-events','none');
-txt.textContent = 'CORRECT!';
+txt.setAttribute('filter','url(#strong-glow)');
+txt.classList.add('pop-in');
+txt.textContent = 'YOU WERE FIRST!';
 gameArea.appendChild(txt);
 
 setTimeout(() => {
 if(flash.parentNode) flash.remove();
 if(txt.parentNode) txt.remove();
-}, 800);
+}, 1500);
+}
+
+function showOpponentWin(){
+const flash = document.createElementNS('http://www.w3.org/2000/svg','rect');
+flash.setAttribute('x','0');
+flash.setAttribute('y','0');
+flash.setAttribute('width','600');
+flash.setAttribute('height','800');
+flash.setAttribute('fill','#ff6b6b');
+flash.setAttribute('opacity','0.15');
+flash.style.pointerEvents = 'none';
+gameArea.appendChild(flash);
+
+const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+txt.setAttribute('x','300');
+txt.setAttribute('y','400');
+txt.setAttribute('text-anchor','middle');
+txt.setAttribute('fill','#ff6b6b');
+txt.setAttribute('font-size','36');
+txt.setAttribute('font-weight','bold');
+txt.setAttribute('pointer-events','none');
+txt.setAttribute('filter','url(#strong-glow)');
+txt.classList.add('pop-in');
+txt.textContent = 'OPPONENT GOT IT FIRST!';
+gameArea.appendChild(txt);
+
+setTimeout(() => {
+if(flash.parentNode) flash.remove();
+if(txt.parentNode) txt.remove();
+}, 2000);
+}
+
+function lockGameInput(){
+roundActive = false;
+if(timerInterval){
+clearInterval(timerInterval);
+timerInterval = null;
+}
+gameState.phase = 'done';
+if(gameState.reactionTimer) clearTimeout(gameState.reactionTimer);
+if(gameState.reactionFallback) clearTimeout(gameState.reactionFallback);
 }
 
 function reportWin(reactionTime){
-if(gameState.phase === 'done') return;
-gameState.phase = 'done';
+if(!roundActive || gameState.phase === 'done') return;
+lockGameInput();
 gameState.myScore++;
 showLocalWin();
 
 const p1Score = localPlayer === 1 ? gameState.myScore : gameState.oppScore;
 const p2Score = localPlayer === 2 ? gameState.myScore : gameState.oppScore;
 
-const result = {
+window.firebaseUpdate(roomRef, {
+roundResult: {
 winner: localPlayer,
 reactionTime: reactionTime || 0,
 p1Score: p1Score,
-p2Score: p2Score
-};
-window.firebaseUpdate(roomRef, { status: 'round_end', result: result });
+p2Score: p2Score,
+message: 'SOLVED!'
+}
+});
 }
 
-function handleRoundResult(data){
-if(!data || !data.result) return;
-const result = data.result;
-gameState.phase = 'done';
+function handleRoundResult(result){
+if(!result || gameState.phase === 'round_ended') return;
+gameState.phase = 'round_ended';
+lockGameInput();
 
 gameState.myScore = localPlayer === 1 ? result.p1Score : result.p2Score;
 gameState.oppScore = localPlayer === 1 ? result.p2Score : result.p1Score;
 document.getElementById('hud-score').textContent = `Score: ${gameState.myScore}`;
 
+if(result.winner === 0){
+// Time up, no winner
 const banner = document.getElementById('winner-banner');
-const winnerText = document.getElementById('winner-text');
-const winnerSub = document.getElementById('winner-sub');
+document.getElementById('winner-text').textContent = 'TIME UP!';
+document.getElementById('winner-text').setAttribute('fill','#ffaa44');
+document.getElementById('winner-sub').textContent = 'Nobody solved it in time';
+banner.setAttribute('display','block');
+} else if(result.winner === localPlayer){
+// We already showed local win, just show banner
+const banner = document.getElementById('winner-banner');
+document.getElementById('winner-text').textContent = 'YOU WIN!';
+document.getElementById('winner-text').setAttribute('fill','#4ecdc4');
+document.getElementById('winner-sub').textContent = result.reactionTime > 0 && result.reactionTime < 5000 ? `${result.reactionTime}ms` : 'Fast reaction!';
+banner.setAttribute('display','block');
+} else {
+// Opponent won
+showOpponentWin();
+setTimeout(() => {
+const banner = document.getElementById('winner-banner');
+document.getElementById('winner-text').textContent = 'OPPONENT WINS';
+document.getElementById('winner-text').setAttribute('fill','#ff6b6b');
+document.getElementById('winner-sub').textContent = result.reactionTime > 0 && result.reactionTime < 5000 ? `${result.reactionTime}ms` : 'They were faster!';
+banner.setAttribute('display','block');
+}, 1800);
+}
+
 const nextBtn = document.getElementById('next-round-btn');
 const guestWait = document.getElementById('guest-wait-text');
-
-if(result.winner === localPlayer){
-winnerText.textContent = 'YOU WIN!';
-winnerText.setAttribute('fill','#4ecdc4');
-} else {
-winnerText.textContent = 'OPPONENT WINS';
-winnerText.setAttribute('fill','#ff6b6b');
-}
-winnerSub.textContent = result.reactionTime > 0 && result.reactionTime < 5000 ? `${result.reactionTime}ms` : 'Fast reaction!';
-
 if(playerRole === 'host'){
 nextBtn.setAttribute('display','block');
 guestWait.setAttribute('display','none');
@@ -697,7 +827,6 @@ guestWait.setAttribute('display','none');
 nextBtn.setAttribute('display','none');
 guestWait.setAttribute('display','block');
 }
-banner.setAttribute('display','block');
 }
 
 window.nextRound = function(){
@@ -717,6 +846,7 @@ showMatchOver({ result: { p1Score: gameState.myScore, p2Score: gameState.oppScor
 } else {
 currentPuzzle = generatePuzzle(gameState.mode, gameState.round);
 const startAt = Date.now() + 3000;
+const roundEndAt = startAt + gameState.roundDuration;
 gameState.phase = 'countdown';
 gameState.userInput = [];
 gameState.selected = [];
@@ -730,9 +860,11 @@ round: gameState.round,
 phase: 'countdown',
 p1Score: gameState.myScore,
 p2Score: gameState.oppScore,
-startAt: startAt
+startAt: startAt,
+roundEndAt: roundEndAt
 },
-puzzle: currentPuzzle
+puzzle: currentPuzzle,
+roundResult: null
 });
 }
 };
@@ -790,6 +922,7 @@ createPlayerGrid(p.size, 180);
 
 let idx = 0;
 const showNext = () => {
+if(!roundActive) return;
 if(idx < gameState.pattern.length){
 const cell = gameState.pattern[idx];
 highlightCell(cell.r, cell.c, '#ffe66d', 500);
@@ -853,6 +986,7 @@ gameArea.appendChild(centerText);
 createColorGrid(size, 180, gameState.colorGrid, colors);
 
 setTimeout(() => {
+if(!roundActive) return;
 centerText.textContent = 'RECREATE IT! CLICK TO CYCLE';
 centerText.setAttribute('fill','#4ecdc4');
 gameState.phase = 'input';
@@ -897,7 +1031,7 @@ gameArea.appendChild(label);
 
 const waitTime = p.waitTime;
 gameState.reactionTimer = setTimeout(() => {
-if(gameState.reactionState !== 'wait') return;
+if(!roundActive || gameState.reactionState !== 'wait') return;
 gameState.reactionState = 'go';
 const box = document.getElementById('react-box');
 const lbl = document.getElementById('react-label');
@@ -906,7 +1040,7 @@ if(lbl) lbl.textContent = 'TAP NOW!';
 gameState.reactionStartTime = Date.now();
 
 gameState.reactionFallback = setTimeout(() => {
-if(gameState.reactionState === 'go' && !gameState.early){
+if(roundActive && gameState.reactionState === 'go' && !gameState.early){
 reportWin(6000);
 }
 }, 6000);
@@ -1027,6 +1161,7 @@ setTimeout(() => rect.setAttribute('fill', orig), duration);
 }
 
 function handleCellClick(r, c, size){
+if(!roundActive) return;
 const mode = gameState.mode;
 if(mode === 'memory_race'){
 if(gameState.phase !== 'input') return;
@@ -1066,7 +1201,7 @@ if(sum === gameState.target) reportWin();
 }
 
 function handleColorCellClick(r, c, colors, size){
-if(gameState.phase !== 'input') return;
+if(!roundActive || gameState.phase !== 'input') return;
 const rect = document.getElementById(`cell-${r}-${c}`);
 const currentFill = rect.getAttribute('fill');
 let currentIdx = colors.indexOf(currentFill);
