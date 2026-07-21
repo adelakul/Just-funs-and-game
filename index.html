@@ -74,11 +74,12 @@ window.firebaseOnDisconnect = onDisconnect;
 <text x="600" y="315" text-anchor="middle" fill="#64d8ff" font-size="20" font-weight="bold" id="room-code-display">----</text>
 <g class="btn" onclick="generateRoomCode()"><rect x="380" y="350" width="210" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="485" y="382" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">🎲 NEW ROOM</text></g>
 <g class="btn" onclick="joinRoomPrompt()"><rect x="610" y="350" width="210" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="715" y="382" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">🔗 JOIN ROOM</text></g>
-<text x="600" y="440" text-anchor="middle" fill="#556677" font-size="13">📱 Share the room code — both players tap to play!</text>
-<text x="600" y="465" text-anchor="middle" fill="#445566" font-size="11">Optimized for phones — tap, swipe, or use keys</text>
-<text x="600" y="490" text-anchor="middle" fill="#ff8b94" font-size="11" id="soundtrack-label">🎵 NOW PLAYING: Stray Kids — God's Menu</text>
-<text x="600" y="505" text-anchor="middle" fill="#445566" font-size="10">Soundtrack: Stray Kids Hits — Thunderous, CASE 143, Back Door, S-Class, Chk Chk Boom</text>
-<text x="600" y="520" text-anchor="middle" fill="#ffaa44" font-size="14" id="connection-status">⚠️ Firebase not configured — see setup instructions in code</text>
+<g class="btn" onclick="showHowToPlay()"><rect x="420" y="410" width="360" height="36" rx="18" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="600" y="435" text-anchor="middle" fill="#ffe66d" font-size="14" font-weight="bold">📖 HOW TO PLAY</text></g>
+<text x="600" y="465" text-anchor="middle" fill="#556677" font-size="13">📱 Share the room code — both players tap to play!</text>
+<text x="600" y="485" text-anchor="middle" fill="#445566" font-size="11">Optimized for phones — tap, swipe, or use keys</text>
+<g class="btn" onclick="toggleMusic()" id="music-btn"><rect x="420" y="505" width="360" height="36" rx="18" fill="#1a0a20" stroke="#ff8b94" stroke-width="2"/><text x="600" y="530" text-anchor="middle" fill="#ff8b94" font-size="13" id="soundtrack-label">🎵 TAP TO PLAY MUSIC: Stray Kids — God's Menu</text></g>
+<text x="600" y="575" text-anchor="middle" fill="#445566" font-size="10">Soundtrack: Stray Kids Hits — Thunderous, CASE 143, Back Door, S-Class, Chk Chk Boom</text>
+<text x="600" y="600" text-anchor="middle" fill="#ffaa44" font-size="14" id="connection-status">⚠️ Firebase not configured — see setup instructions in code</text>
 </g>
 
 <!-- WAITING SCREEN -->
@@ -188,6 +189,51 @@ window.firebaseOnDisconnect = onDisconnect;
 <text x="600" y="300" text-anchor="middle" fill="#ff6b6b" font-size="36" font-weight="bold">OPPONENT DISCONNECTED</text>
 <text x="600" y="350" text-anchor="middle" fill="#8899aa" font-size="18">Your opponent left the duel.</text>
 <g class="btn" onclick="showTitle()"><rect x="450" y="400" width="300" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="600" y="432" text-anchor="middle" fill="#64d8ff" font-size="16">RETURN TO MENU</text></g>
+
+<!-- HOW TO PLAY OVERLAY -->
+<g id="how-to-play" display="none">
+<rect width="1200" height="675" fill="#050814" opacity="0.97" rx="16"/>
+<text x="600" y="80" text-anchor="middle" fill="#64d8ff" font-size="32" font-weight="bold" filter="url(#strong-glow)">📱 HOW TO PLAY ON MOBILE</text>
+
+<g transform="translate(100, 120)">
+<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">1. D-PAD (Left/Right side)</text>
+<text x="0" y="25" fill="#8899aa" font-size="14">Tap the ↑ ↓ ← → circles to move your cursor on the grid</text>
+<circle cx="50" cy="60" r="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
+<text x="50" y="68" text-anchor="middle" fill="#64d8ff" font-size="10">↑</text>
+<circle cx="50" cy="120" r="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
+<text x="50" y="128" text-anchor="middle" fill="#64d8ff" font-size="10">↓</text>
+<circle cx="10" cy="90" r="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
+<text x="10" y="98" text-anchor="middle" fill="#64d8ff" font-size="10">←</text>
+<circle cx="90" cy="90" r="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
+<text x="90" y="98" text-anchor="middle" fill="#64d8ff" font-size="10">→</text>
+</g>
+
+<g transform="translate(450, 120)">
+<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">2. ACT BUTTON</text>
+<text x="0" y="25" fill="#8899aa" font-size="14">Tap the big ACT circle to select / confirm / submit</text>
+<circle cx="60" cy="80" r="40" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3"/>
+<text x="60" y="88" text-anchor="middle" fill="#64d8ff" font-size="14" font-weight="bold">ACT</text>
+</g>
+
+<g transform="translate(800, 120)">
+<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">3. TAP CELLS DIRECTLY</text>
+<text x="0" y="25" fill="#8899aa" font-size="14">You can also tap grid cells directly — no D-pad needed!</text>
+<rect x="10" y="50" width="50" height="50" rx="8" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/>
+<text x="35" y="82" text-anchor="middle" fill="#64d8ff" font-size="12">TAP</text>
+<rect x="70" y="50" width="50" height="50" rx="8" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/>
+<text x="95" y="82" text-anchor="middle" fill="#64d8ff" font-size="12">ME</text>
+</g>
+
+<text x="600" y="320" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">💡 TIP: On desktop you can also use WASD (P1) and Arrow Keys (P2)</text>
+
+<g class="btn" onclick="hideHowToPlay()" transform="translate(450, 380)">
+<rect width="300" height="55" rx="12" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
+<text x="150" y="35" text-anchor="middle" fill="#64d8ff" font-size="18" font-weight="bold">GOT IT! LET'S DUEL ⚡</text>
+</g>
+
+<text x="600" y="500" text-anchor="middle" fill="#445566" font-size="12">Both players use the same screen — P1 on left, P2 on right</text>
+</g>
+
 </g>
 </svg>
 </div>
@@ -246,9 +292,24 @@ let currentTrack = 0;
 function cycleSoundtrack(){
     currentTrack = (currentTrack + 1) % SOUNDTRACKS.length;
     const label = document.getElementById('soundtrack-label');
-    if(label) label.textContent = `🎵 NOW PLAYING: Stray Kids — ${SOUNDTRACKS[currentTrack].title}`;
+    if(label && !musicPlaying) label.textContent = `🎵 TAP TO PLAY MUSIC: Stray Kids — ${SOUNDTRACKS[currentTrack].title}`;
 }
-setInterval(cycleSoundtrack, 15000);
+setInterval(cycleSoundtrack, 8000);
+
+// ===== HOW TO PLAY OVERLAY =====
+window.showHowToPlay = function(){
+    document.getElementById('how-to-play').setAttribute('display','block');
+};
+window.hideHowToPlay = function(){
+    document.getElementById('how-to-play').setAttribute('display','none');
+    localStorage.setItem('neural_duel_seen_tutorial','true');
+};
+// Show tutorial on first visit
+setTimeout(()=>{
+    if(!localStorage.getItem('neural_duel_seen_tutorial')){
+        showHowToPlay();
+    }
+}, 500);
 
 function showScreen(id){
 ['title-screen','mode-select','guest-waiting','hud','p1-area','p2-area','center-area','winner-banner','match-over','disconnected','waiting-screen','touch-controls'].forEach(s=>{
@@ -257,6 +318,11 @@ const el=document.getElementById(s);if(el)el.setAttribute('display','none');
 const target=document.getElementById(id);
 if(target)target.setAttribute('display','block');
 if(id==='hud'){p1Area.setAttribute('display','block');p2Area.setAttribute('display','block');centerArea.setAttribute('display','block');document.getElementById('touch-controls').setAttribute('display','block');}
+// Always show touch controls during any game phase
+if(id==='hud'||id==='p1-area'||id==='p2-area'||id==='center-area'){
+    const tc=document.getElementById('touch-controls');
+    if(tc)tc.setAttribute('display','block');
+}
 }
 
 function resetState(){
@@ -1152,5 +1218,55 @@ if(key==='e'&&getCurrentMode()==='reaction_duel')handleReaction(1);
 if(key==='o'&&getCurrentMode()==='reaction_duel')handleReaction(2);
 });
 </script>
+
+<!-- MUSIC PLAYER -->
+<div id="music-player" style="position:fixed;bottom:10px;right:10px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
+<iframe id="yt-player" width="1" height="1" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+
+<script>
+// ===== REAL MUSIC PLAYER =====
+const SKZ_PLAYLIST = [
+    {title:"God's Menu", id:"TQTlCHxyuu8"},
+    {title:"Thunderous", id:"EaswWiwMVs8"},
+    {title:"CASE 143", id:"jWkaqXjATNk"},
+    {title:"Back Door", id:"X-uJtV8ScYk"},
+    {title:"S-Class", id:"H-1B9QRb2e0"},
+    {title:"Chk Chk Boom", id:"0P0a8PbKTxU"},
+    {title:"Maniac", id:"OvioeSKejt0"},
+    {title:"LALALALA", id:"dBDkEXB0z1E"},
+    {title:"Rock-Star", id:"4R7vRhvNRng"},
+    {title:"Hall of Fame", id:"3P-wT7234z0"}
+];
+let musicPlaying = false;
+let currentTrackIdx = 0;
+
+window.toggleMusic = function(){
+    const iframe = document.getElementById('yt-player');
+    const label = document.getElementById('soundtrack-label');
+    if(!musicPlaying){
+        const track = SKZ_PLAYLIST[currentTrackIdx];
+        iframe.src = `https://www.youtube.com/embed/${track.id}?autoplay=1&mute=0&loop=1&playlist=${track.id}`;
+        musicPlaying = true;
+        if(label) label.textContent = `▶️ PLAYING: Stray Kids — ${track.title}`;
+    } else {
+        iframe.src = '';
+        musicPlaying = false;
+        currentTrackIdx = (currentTrackIdx + 1) % SKZ_PLAYLIST.length;
+        const next = SKZ_PLAYLIST[currentTrackIdx];
+        if(label) label.textContent = `🎵 TAP TO PLAY MUSIC: Stray Kids — ${next.title}`;
+    }
+};
+
+// Auto-cycle label even if not playing
+setInterval(()=>{
+    if(!musicPlaying){
+        currentTrackIdx = (currentTrackIdx + 1) % SKZ_PLAYLIST.length;
+        const label = document.getElementById('soundtrack-label');
+        if(label) label.textContent = `🎵 TAP TO PLAY MUSIC: Stray Kids — ${SKZ_PLAYLIST[currentTrackIdx].title}`;
+    }
+}, 8000);
+</script>
+
 </body>
 </html>
