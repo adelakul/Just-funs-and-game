@@ -51,6 +51,7 @@ window.firebaseRemove = remove;
 window.firebaseOnDisconnect = onDisconnect;
 </script>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div id="game-container">
@@ -67,14 +68,16 @@ window.firebaseOnDisconnect = onDisconnect;
 <g id="title-screen">
 <text x="600" y="130" text-anchor="middle" fill="#64d8ff" font-family="'Courier New',monospace" font-size="52" font-weight="bold" filter="url(#strong-glow)" class="float">NEURAL</text>
 <text x="600" y="185" text-anchor="middle" fill="#ff6b6b" font-family="'Courier New',monospace" font-size="52" font-weight="bold" filter="url(#strong-glow)" class="float">DUEL ONLINE</text>
-<text x="600" y="235" text-anchor="middle" fill="#8899aa" font-family="'Courier New',monospace" font-size="18" letter-spacing="3">PLAY WITH A FRIEND ON ANY DEVICE</text>
+<text x="600" y="235" text-anchor="middle" fill="#8899aa" font-family="'Courier New',monospace" font-size="18" letter-spacing="3">TAP TO PLAY WITH A FRIEND</text>
 <rect x="380" y="280" width="440" height="55" rx="12" fill="#0a1020" stroke="#3a5a8f" stroke-width="2"/>
 <text x="410" y="315" fill="#556677" font-size="16" id="room-code-label">Enter Room Code:</text>
 <text x="600" y="315" text-anchor="middle" fill="#64d8ff" font-size="20" font-weight="bold" id="room-code-display">----</text>
 <g class="btn" onclick="generateRoomCode()"><rect x="380" y="350" width="210" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="485" y="382" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">🎲 NEW ROOM</text></g>
 <g class="btn" onclick="joinRoomPrompt()"><rect x="610" y="350" width="210" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="715" y="382" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">🔗 JOIN ROOM</text></g>
-<text x="600" y="440" text-anchor="middle" fill="#556677" font-size="13">Share the room code with your friend!</text>
-<text x="600" y="465" text-anchor="middle" fill="#445566" font-size="11">Works on phones, tablets, and computers</text>
+<text x="600" y="440" text-anchor="middle" fill="#556677" font-size="13">📱 Share the room code — both players tap to play!</text>
+<text x="600" y="465" text-anchor="middle" fill="#445566" font-size="11">Optimized for phones — tap, swipe, or use keys</text>
+<text x="600" y="490" text-anchor="middle" fill="#ff8b94" font-size="11" id="soundtrack-label">🎵 NOW PLAYING: Stray Kids — God's Menu</text>
+<text x="600" y="505" text-anchor="middle" fill="#445566" font-size="10">Soundtrack: Stray Kids Hits — Thunderous, CASE 143, Back Door, S-Class, Chk Chk Boom</text>
 <text x="600" y="520" text-anchor="middle" fill="#ffaa44" font-size="14" id="connection-status">⚠️ Firebase not configured — see setup instructions in code</text>
 </g>
 
@@ -133,29 +136,29 @@ window.firebaseOnDisconnect = onDisconnect;
 <g id="center-area" display="none"></g>
 
 <!-- TOUCH CONTROLS -->
-<g id="touch-controls" display="none">
-<g id="p1-dpad" transform="translate(60, 500)">
-<circle cx="40" cy="40" r="35" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2" opacity="0.6" class="btn" ontouchstart="handleTouch('p1','up')" onmousedown="handleTouch('p1','up')"/>
-<circle cx="40" cy="120" r="35" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2" opacity="0.6" class="btn" ontouchstart="handleTouch('p1','down')" onmousedown="handleTouch('p1','down')"/>
-<circle cx="0" cy="80" r="35" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2" opacity="0.6" class="btn" ontouchstart="handleTouch('p1','left')" onmousedown="handleTouch('p1','left')"/>
-<circle cx="80" cy="80" r="35" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2" opacity="0.6" class="btn" ontouchstart="handleTouch('p1','right')" onmousedown="handleTouch('p1','right')"/>
+<g id="touch-controls" display="none" style="pointer-events:all">
+<g id="p1-dpad" transform="translate(80, 480)">
+<circle cx="40" cy="40" r="42" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p1','up')" onmousedown="handleTouch('p1','up')"/>
+<circle cx="40" cy="120" r="42" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p1','down')" onmousedown="handleTouch('p1','down')"/>
+<circle cx="0" cy="80" r="42" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p1','left')" onmousedown="handleTouch('p1','left')"/>
+<circle cx="80" cy="80" r="42" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p1','right')" onmousedown="handleTouch('p1','right')"/>
 <circle cx="40" cy="80" r="25" fill="#64d8ff" opacity="0.8"/>
 <text x="40" y="88" text-anchor="middle" fill="#0a1020" font-size="12" font-weight="bold">Q</text>
 </g>
-<g id="p1-action" transform="translate(180, 540)" class="btn" ontouchstart="handleTouch('p1','action')" onmousedown="handleTouch('p1','action')">
-<circle cx="40" cy="40" r="45" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.8"/>
+<g id="p1-action" transform="translate(200, 520)" class="btn" ontouchstart="handleTouch('p1','action')" onmousedown="handleTouch('p1','action')">
+<circle cx="40" cy="40" r="55" fill="#1e3a5f" stroke="#64d8ff" stroke-width="4" opacity="0.9"/>
 <text x="40" y="48" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">ACT</text>
 </g>
-<g id="p2-dpad" transform="translate(1020, 500)">
-<circle cx="40" cy="40" r="35" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2" opacity="0.6" class="btn" ontouchstart="handleTouch('p2','up')" onmousedown="handleTouch('p2','up')"/>
-<circle cx="40" cy="120" r="35" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2" opacity="0.6" class="btn" ontouchstart="handleTouch('p2','down')" onmousedown="handleTouch('p2','down')"/>
-<circle cx="0" cy="80" r="35" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2" opacity="0.6" class="btn" ontouchstart="handleTouch('p2','left')" onmousedown="handleTouch('p2','left')"/>
-<circle cx="80" cy="80" r="35" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2" opacity="0.6" class="btn" ontouchstart="handleTouch('p2','right')" onmousedown="handleTouch('p2','right')"/>
+<g id="p2-dpad" transform="translate(1000, 480)">
+<circle cx="40" cy="40" r="42" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p2','up')" onmousedown="handleTouch('p2','up')"/>
+<circle cx="40" cy="120" r="42" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p2','down')" onmousedown="handleTouch('p2','down')"/>
+<circle cx="0" cy="80" r="42" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p2','left')" onmousedown="handleTouch('p2','left')"/>
+<circle cx="80" cy="80" r="42" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p2','right')" onmousedown="handleTouch('p2','right')"/>
 <circle cx="40" cy="80" r="25" fill="#ff6b6b" opacity="0.8"/>
 <text x="40" y="88" text-anchor="middle" fill="#0a1020" font-size="12" font-weight="bold">U</text>
 </g>
-<g id="p2-action" transform="translate(940, 540)" class="btn" ontouchstart="handleTouch('p2','action')" onmousedown="handleTouch('p2','action')">
-<circle cx="40" cy="40" r="45" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.8"/>
+<g id="p2-action" transform="translate(920, 520)" class="btn" ontouchstart="handleTouch('p2','action')" onmousedown="handleTouch('p2','action')">
+<circle cx="40" cy="40" r="55" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="4" opacity="0.9"/>
 <text x="40" y="48" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">ACT</text>
 </g>
 </g>
@@ -225,6 +228,28 @@ function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function isPrime(n){if(n<2)return false;for(let i=2;i<=Math.sqrt(n);i++)if(n%i===0)return false;return true;}
 
+
+// ===== SOUNDTRACK SYSTEM =====
+const SOUNDTRACKS = [
+    {title:"God's Menu", vibe:"Intense"},
+    {title:"Thunderous", vibe:"Epic"},
+    {title:"CASE 143", vibe:"Energetic"},
+    {title:"Back Door", vibe:"Bold"},
+    {title:"S-Class", vibe:"Powerful"},
+    {title:"Chk Chk Boom", vibe:"Confident"},
+    {title:"Maniac", vibe:"Dark"},
+    {title:"LALALALA", vibe:"Triumphant"},
+    {title:"Rock-Star", vibe:"Rebellious"},
+    {title:"Hall of Fame", vibe:"Victory"}
+];
+let currentTrack = 0;
+function cycleSoundtrack(){
+    currentTrack = (currentTrack + 1) % SOUNDTRACKS.length;
+    const label = document.getElementById('soundtrack-label');
+    if(label) label.textContent = `🎵 NOW PLAYING: Stray Kids — ${SOUNDTRACKS[currentTrack].title}`;
+}
+setInterval(cycleSoundtrack, 15000);
+
 function showScreen(id){
 ['title-screen','mode-select','guest-waiting','hud','p1-area','p2-area','center-area','winner-banner','match-over','disconnected','waiting-screen','touch-controls'].forEach(s=>{
 const el=document.getElementById(s);if(el)el.setAttribute('display','none');
@@ -279,7 +304,7 @@ txt.setAttribute('font-weight','bold');
 txt.textContent=labels[r*size+c];
 g.appendChild(txt);
 }
-// Click handler for desktop mouse
+// Tap/click handler for all devices
 if(gameState.phase==='input'){
 g.addEventListener('click',()=>handleCellClick(player,r,c));
 }
@@ -560,7 +585,7 @@ highlightPlayerCell(2,p.r,p.c,'#ffe66d',500);
 idx++;
 setTimeout(showNext,700);
 }else{
-centerText.textContent='REPEAT IT! Tap cells or use controls';
+centerText.textContent='REPEAT IT! Tap cells or use the D-pad';
 centerText.setAttribute('fill','#4ecdc4');
 gameState.phase='input';
 setCursor(1,0,0,size);setCursor(2,0,0,size);
@@ -612,7 +637,7 @@ const centerSub=document.createElementNS('http://www.w3.org/2000/svg','text');
 centerSub.setAttribute('x','600');centerSub.setAttribute('y','230');
 centerSub.setAttribute('text-anchor','middle');centerSub.setAttribute('fill','#8899aa');
 centerSub.setAttribute('font-size','14');
-centerSub.textContent='Select 2+ numbers that sum to target. Tap ACT to confirm.';
+centerSub.textContent='Select 2+ numbers that sum to target. Tap cells or use D-pad + ACT.';
 centerArea.appendChild(centerSub);
 setCursor(1,0,0,size);setCursor(2,0,0,size);
 gameState.phase='input';
@@ -728,14 +753,14 @@ const centerInstr=document.createElementNS('http://www.w3.org/2000/svg','text');
 centerInstr.setAttribute('x','600');centerInstr.setAttribute('y','200');
 centerInstr.setAttribute('text-anchor','middle');centerInstr.setAttribute('fill','#ff6b6b');
 centerInstr.setAttribute('font-size','22');
-centerInstr.textContent='WAIT FOR GREEN... THEN TAP ACT!';
+centerInstr.textContent='WAIT FOR GREEN... THEN TAP ACT BUTTON!';
 centerArea.appendChild(centerInstr);
 setTimeout(()=>{
 gameState.reactionState='go';
 document.getElementById('p1-react').setAttribute('fill','#44ff44');
 document.getElementById('p2-react').setAttribute('fill','#44ff44');
-document.getElementById('p1-react-label').textContent='TAP ACT!';
-document.getElementById('p2-react-label').textContent='TAP ACT!';
+document.getElementById('p1-react-label').textContent='TAP ACT BUTTON!';
+document.getElementById('p2-react-label').textContent='TAP ACT BUTTON!';
 centerInstr.textContent='GO GO GO!';centerInstr.setAttribute('fill','#4ecdc4');
 gameState.reactionStartTime=Date.now();
 },gameState.reactionTime);
@@ -772,7 +797,7 @@ const sub=document.createElementNS('http://www.w3.org/2000/svg','text');
 sub.setAttribute('x','600');sub.setAttribute('y','230');
 sub.setAttribute('text-anchor','middle');sub.setAttribute('fill','#8899aa');
 sub.setAttribute('font-size','13');
-sub.textContent='Tap cells to select. ACT to confirm. First to get all correct wins!';
+sub.textContent='Tap cells or use D-pad. ACT to confirm. First to get all correct wins!';
 centerArea.appendChild(sub);
 setCursor(1,0,0,size);setCursor(2,0,0,size);
 gameState.phase='input';
@@ -892,19 +917,19 @@ const instr=document.createElementNS('http://www.w3.org/2000/svg','text');
 instr.setAttribute('x','600');instr.setAttribute('y','250');
 instr.setAttribute('text-anchor','middle');instr.setAttribute('fill','#8899aa');
 instr.setAttribute('font-size','14');
-instr.textContent='Tap ACT to submit the current letter at cursor position';
+instr.textContent='Navigate to a letter, then tap ACT to select it';
 centerArea.appendChild(instr);
 const p1Bank=document.createElementNS('http://www.w3.org/2000/svg','text');
 p1Bank.setAttribute('x','190');p1Bank.setAttribute('y','320');
 p1Bank.setAttribute('text-anchor','middle');p1Bank.setAttribute('fill','#64d8ff');
 p1Bank.setAttribute('font-size','14');
-p1Bank.textContent='Navigate to letter, tap ACT';
+p1Bank.textContent='Use D-pad + ACT button';
 p1Area.appendChild(p1Bank);
 const p2Bank=document.createElementNS('http://www.w3.org/2000/svg','text');
 p2Bank.setAttribute('x','1010');p2Bank.setAttribute('y','320');
 p2Bank.setAttribute('text-anchor','middle');p2Bank.setAttribute('fill','#ff6b6b');
 p2Bank.setAttribute('font-size','14');
-p2Bank.textContent='Navigate to letter, tap ACT';
+p2Bank.textContent='Use D-pad + ACT button';
 p2Area.appendChild(p2Bank);
 const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 createPlayerGrid(1,5,30,350,letters.slice(0,25));
@@ -1100,19 +1125,19 @@ if(mode==='logic_faceoff')checkLogicGuess(p);
 }
 };
 
-// ===== KEYBOARD (Desktop fallback) =====
+// ===== KEYBOARD SUPPORT (Optional — tap works too!) =====
 document.addEventListener('keydown',function(e){
 if(gameState.phase!=='input'&&!(gameState.phase==='playing'&&getCurrentMode()==='reaction_duel'))return;
 const key=e.key.toLowerCase();
 const size=gameState.gridSize;
 
-// P1: WASD
+// P1: WASD keys (optional on desktop)
 if(key==='w'&&gameState.p1.cursor.r>0){gameState.p1.cursor.r--;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
 if(key==='s'&&gameState.p1.cursor.r<size-1){gameState.p1.cursor.r++;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
 if(key==='a'&&gameState.p1.cursor.c>0){gameState.p1.cursor.c--;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
 if(key==='d'&&gameState.p1.cursor.c<size-1){gameState.p1.cursor.c++;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
 
-// P2: Arrows
+// P2: Arrow keys (optional on desktop)
 if(e.key==='ArrowUp'&&gameState.p2.cursor.r>0){gameState.p2.cursor.r--;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
 if(e.key==='ArrowDown'&&gameState.p2.cursor.r<size-1){gameState.p2.cursor.r++;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
 if(e.key==='ArrowLeft'&&gameState.p2.cursor.c>0){gameState.p2.cursor.c--;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
