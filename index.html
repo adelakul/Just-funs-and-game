@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+
+# Let me write the file directly instead of using string literals
+with open('/mnt/agents/output/neural_duel.html', 'w') as f:
+    f.write('''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -25,11 +28,6 @@ svg{width:100%;height:100%;display:block;border-radius:16px;box-shadow:0 0 80px 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, update, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ============================================================
-// STEP 1: REPLACE WITH YOUR OWN FIREBASE CONFIG
-// Go to https://console.firebase.google.com/ → Create Project → Build → Realtime Database → Create
-// Then Project Settings → General → Your Apps → Web → Register App → Copy config here
-// ============================================================
 const firebaseConfig = {
     apiKey: "AIzaSyAiX80DwqaHZPEk_J_brGtnY9Fcd_dHqgc",
     authDomain: "game-1e8b3.firebaseapp.com",
@@ -50,7 +48,6 @@ window.firebaseUpdate = update;
 window.firebaseRemove = remove;
 window.firebaseOnDisconnect = onDisconnect;
 </script>
-<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -76,9 +73,8 @@ window.firebaseOnDisconnect = onDisconnect;
 <g class="btn" onclick="joinRoomPrompt()"><rect x="610" y="350" width="210" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="715" y="382" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">🔗 JOIN ROOM</text></g>
 <g class="btn" onclick="showHowToPlay()"><rect x="420" y="410" width="360" height="36" rx="18" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="600" y="435" text-anchor="middle" fill="#ffe66d" font-size="14" font-weight="bold">📖 HOW TO PLAY</text></g>
 <text x="600" y="465" text-anchor="middle" fill="#556677" font-size="13">📱 Share the room code — both players tap to play!</text>
-<text x="600" y="485" text-anchor="middle" fill="#445566" font-size="11">Optimized for phones — tap, swipe, or use keys</text>
-<g class="btn" onclick="toggleMusic()" id="music-btn"><rect x="420" y="505" width="360" height="36" rx="18" fill="#1a0a20" stroke="#ff8b94" stroke-width="2"/><text x="600" y="530" text-anchor="middle" fill="#ff8b94" font-size="13" id="soundtrack-label">🎵 TAP TO PLAY MUSIC: Stray Kids — God's Menu</text></g>
-<text x="600" y="575" text-anchor="middle" fill="#445566" font-size="10">Soundtrack: Stray Kids Hits — Thunderous, CASE 143, Back Door, S-Class, Chk Chk Boom</text>
+<text x="600" y="485" text-anchor="middle" fill="#445566" font-size="11">Optimized for phones — just tap cells directly!</text>
+<text x="600" y="575" text-anchor="middle" fill="#445566" font-size="10">🎵 Now Playing: Stray Kids — Run It</text>
 <text x="600" y="600" text-anchor="middle" fill="#ffaa44" font-size="14" id="connection-status">⚠️ Firebase not configured — see setup instructions in code</text>
 </g>
 
@@ -136,34 +132,6 @@ window.firebaseOnDisconnect = onDisconnect;
 <g id="p2-area" display="none"></g>
 <g id="center-area" display="none"></g>
 
-<!-- TOUCH CONTROLS -->
-<g id="touch-controls" display="none" style="pointer-events:all">
-<g id="p1-dpad" transform="translate(80, 480)">
-<circle cx="40" cy="40" r="42" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p1','up')" onmousedown="handleTouch('p1','up')"/>
-<circle cx="40" cy="120" r="42" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p1','down')" onmousedown="handleTouch('p1','down')"/>
-<circle cx="0" cy="80" r="42" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p1','left')" onmousedown="handleTouch('p1','left')"/>
-<circle cx="80" cy="80" r="42" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p1','right')" onmousedown="handleTouch('p1','right')"/>
-<circle cx="40" cy="80" r="25" fill="#64d8ff" opacity="0.8"/>
-<text x="40" y="88" text-anchor="middle" fill="#0a1020" font-size="12" font-weight="bold">Q</text>
-</g>
-<g id="p1-action" transform="translate(200, 520)" class="btn" ontouchstart="handleTouch('p1','action')" onmousedown="handleTouch('p1','action')">
-<circle cx="40" cy="40" r="55" fill="#1e3a5f" stroke="#64d8ff" stroke-width="4" opacity="0.9"/>
-<text x="40" y="48" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">ACT</text>
-</g>
-<g id="p2-dpad" transform="translate(1000, 480)">
-<circle cx="40" cy="40" r="42" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p2','up')" onmousedown="handleTouch('p2','up')"/>
-<circle cx="40" cy="120" r="42" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p2','down')" onmousedown="handleTouch('p2','down')"/>
-<circle cx="0" cy="80" r="42" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p2','left')" onmousedown="handleTouch('p2','left')"/>
-<circle cx="80" cy="80" r="42" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="3" opacity="0.85" class="btn" ontouchstart="handleTouch('p2','right')" onmousedown="handleTouch('p2','right')"/>
-<circle cx="40" cy="80" r="25" fill="#ff6b6b" opacity="0.8"/>
-<text x="40" y="88" text-anchor="middle" fill="#0a1020" font-size="12" font-weight="bold">U</text>
-</g>
-<g id="p2-action" transform="translate(920, 520)" class="btn" ontouchstart="handleTouch('p2','action')" onmousedown="handleTouch('p2','action')">
-<circle cx="40" cy="40" r="55" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="4" opacity="0.9"/>
-<text x="40" y="48" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">ACT</text>
-</g>
-</g>
-
 <!-- WINNER BANNER -->
 <g id="winner-banner" display="none">
 <rect x="200" y="200" width="800" height="200" rx="20" fill="#0a1020" stroke="#ffe66d" stroke-width="3" opacity="0.95"/>
@@ -189,39 +157,31 @@ window.firebaseOnDisconnect = onDisconnect;
 <text x="600" y="300" text-anchor="middle" fill="#ff6b6b" font-size="36" font-weight="bold">OPPONENT DISCONNECTED</text>
 <text x="600" y="350" text-anchor="middle" fill="#8899aa" font-size="18">Your opponent left the duel.</text>
 <g class="btn" onclick="showTitle()"><rect x="450" y="400" width="300" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="600" y="432" text-anchor="middle" fill="#64d8ff" font-size="16">RETURN TO MENU</text></g>
+</g>
 
 <!-- HOW TO PLAY OVERLAY -->
 <g id="how-to-play" display="none">
 <rect width="1200" height="675" fill="#050814" opacity="0.97" rx="16"/>
-<text x="600" y="80" text-anchor="middle" fill="#64d8ff" font-size="32" font-weight="bold" filter="url(#strong-glow)">📱 HOW TO PLAY ON MOBILE</text>
+<text x="600" y="80" text-anchor="middle" fill="#64d8ff" font-size="32" font-weight="bold" filter="url(#strong-glow)">📱 HOW TO PLAY</text>
 
 <g transform="translate(100, 120)">
-<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">1. D-PAD (Left/Right side)</text>
-<text x="0" y="25" fill="#8899aa" font-size="14">Tap the ↑ ↓ ← → circles to move your cursor on the grid</text>
-<circle cx="50" cy="60" r="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
-<text x="50" y="68" text-anchor="middle" fill="#64d8ff" font-size="10">↑</text>
-<circle cx="50" cy="120" r="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
-<text x="50" y="128" text-anchor="middle" fill="#64d8ff" font-size="10">↓</text>
-<circle cx="10" cy="90" r="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
-<text x="10" y="98" text-anchor="middle" fill="#64d8ff" font-size="10">←</text>
-<circle cx="90" cy="90" r="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/>
-<text x="90" y="98" text-anchor="middle" fill="#64d8ff" font-size="10">→</text>
+<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">1. TAP CELLS DIRECTLY</text>
+<text x="0" y="25" fill="#8899aa" font-size="14">Just tap the grid cells on your side — that's it!</text>
+<rect x="10" y="50" width="60" height="60" rx="10" fill="#0f1830" stroke="#64d8ff" stroke-width="3"/>
+<text x="40" y="88" text-anchor="middle" fill="#64d8ff" font-size="18" font-weight="bold">TAP</text>
 </g>
 
 <g transform="translate(450, 120)">
-<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">2. ACT BUTTON</text>
-<text x="0" y="25" fill="#8899aa" font-size="14">Tap the big ACT circle to select / confirm / submit</text>
-<circle cx="60" cy="80" r="40" fill="#1e3a5f" stroke="#64d8ff" stroke-width="3"/>
-<text x="60" y="88" text-anchor="middle" fill="#64d8ff" font-size="14" font-weight="bold">ACT</text>
+<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">2. SELECT / CONFIRM</text>
+<text x="0" y="25" fill="#8899aa" font-size="14">Tap cells to select. Some modes need multiple taps.</text>
+<rect x="10" y="50" width="60" height="60" rx="10" fill="#64d8ff" stroke="#64d8ff" stroke-width="3"/>
+<text x="40" y="88" text-anchor="middle" fill="#0a1020" font-size="14" font-weight="bold">✓</text>
 </g>
 
 <g transform="translate(800, 120)">
-<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">3. TAP CELLS DIRECTLY</text>
-<text x="0" y="25" fill="#8899aa" font-size="14">You can also tap grid cells directly — no D-pad needed!</text>
-<rect x="10" y="50" width="50" height="50" rx="8" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/>
-<text x="35" y="82" text-anchor="middle" fill="#64d8ff" font-size="12">TAP</text>
-<rect x="70" y="50" width="50" height="50" rx="8" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/>
-<text x="95" y="82" text-anchor="middle" fill="#64d8ff" font-size="12">ME</text>
+<text x="0" y="0" fill="#ffe66d" font-size="20" font-weight="bold">3. BE FAST</text>
+<text x="0" y="25" fill="#8899aa" font-size="14">First to complete the challenge wins the round!</text>
+<text x="10" y="60" fill="#ff6b6b" font-size="30" font-weight="bold">⚡</text>
 </g>
 
 <text x="600" y="320" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">💡 TIP: On desktop you can also use WASD (P1) and Arrow Keys (P2)</text>
@@ -234,12 +194,15 @@ window.firebaseOnDisconnect = onDisconnect;
 <text x="600" y="500" text-anchor="middle" fill="#445566" font-size="12">Both players use the same screen — P1 on left, P2 on right</text>
 </g>
 
-</g>
 </svg>
 </div>
 
 <script>
-// ===== GLOBALS =====
+''')
+    f.flush()
+
+with open('/mnt/agents/output/neural_duel.html', 'a') as f:
+    f.write('''// ===== GLOBALS =====
 let db = null, roomRef = null, roomCode = '', playerRole = null, localPlayer = 1;
 let opponentConnected = false, roomUnsubscribe = null;
 
@@ -274,28 +237,6 @@ function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function isPrime(n){if(n<2)return false;for(let i=2;i<=Math.sqrt(n);i++)if(n%i===0)return false;return true;}
 
-
-// ===== SOUNDTRACK SYSTEM =====
-const SOUNDTRACKS = [
-    {title:"God's Menu", vibe:"Intense"},
-    {title:"Thunderous", vibe:"Epic"},
-    {title:"CASE 143", vibe:"Energetic"},
-    {title:"Back Door", vibe:"Bold"},
-    {title:"S-Class", vibe:"Powerful"},
-    {title:"Chk Chk Boom", vibe:"Confident"},
-    {title:"Maniac", vibe:"Dark"},
-    {title:"LALALALA", vibe:"Triumphant"},
-    {title:"Rock-Star", vibe:"Rebellious"},
-    {title:"Hall of Fame", vibe:"Victory"}
-];
-let currentTrack = 0;
-function cycleSoundtrack(){
-    currentTrack = (currentTrack + 1) % SOUNDTRACKS.length;
-    const label = document.getElementById('soundtrack-label');
-    if(label && !musicPlaying) label.textContent = `🎵 TAP TO PLAY MUSIC: Stray Kids — ${SOUNDTRACKS[currentTrack].title}`;
-}
-setInterval(cycleSoundtrack, 8000);
-
 // ===== HOW TO PLAY OVERLAY =====
 window.showHowToPlay = function(){
     document.getElementById('how-to-play').setAttribute('display','block');
@@ -312,17 +253,12 @@ setTimeout(()=>{
 }, 500);
 
 function showScreen(id){
-['title-screen','mode-select','guest-waiting','hud','p1-area','p2-area','center-area','winner-banner','match-over','disconnected','waiting-screen','touch-controls'].forEach(s=>{
+['title-screen','mode-select','guest-waiting','hud','p1-area','p2-area','center-area','winner-banner','match-over','disconnected','waiting-screen'].forEach(s=>{
 const el=document.getElementById(s);if(el)el.setAttribute('display','none');
 });
 const target=document.getElementById(id);
 if(target)target.setAttribute('display','block');
-if(id==='hud'){p1Area.setAttribute('display','block');p2Area.setAttribute('display','block');centerArea.setAttribute('display','block');document.getElementById('touch-controls').setAttribute('display','block');}
-// Always show touch controls during any game phase
-if(id==='hud'||id==='p1-area'||id==='p2-area'||id==='center-area'){
-    const tc=document.getElementById('touch-controls');
-    if(tc)tc.setAttribute('display','block');
-}
+if(id==='hud'){p1Area.setAttribute('display','block');p2Area.setAttribute('display','block');centerArea.setAttribute('display','block');}
 }
 
 function resetState(){
@@ -337,7 +273,7 @@ logicRule:null,logicExamples:[]
 };
 }
 
-// ===== GRID CREATION =====
+// ===== GRID CREATION (CLICK-AND-SELECT ONLY) =====
 function createPlayerGrid(player,size,startX,startY,labels,options={}){
 const area=player===1?p1Area:p2Area;
 const cellW=280/size;
@@ -370,10 +306,8 @@ txt.setAttribute('font-weight','bold');
 txt.textContent=labels[r*size+c];
 g.appendChild(txt);
 }
-// Tap/click handler for all devices
-if(gameState.phase==='input'){
+// Direct tap/click handler — no joystick needed
 g.addEventListener('click',()=>handleCellClick(player,r,c));
-}
 area.appendChild(g);
 }
 }
@@ -651,10 +585,9 @@ highlightPlayerCell(2,p.r,p.c,'#ffe66d',500);
 idx++;
 setTimeout(showNext,700);
 }else{
-centerText.textContent='REPEAT IT! Tap cells or use the D-pad';
+centerText.textContent='REPEAT IT! Tap cells on your grid';
 centerText.setAttribute('fill','#4ecdc4');
 gameState.phase='input';
-setCursor(1,0,0,size);setCursor(2,0,0,size);
 }
 };
 setTimeout(showNext,500);
@@ -703,9 +636,8 @@ const centerSub=document.createElementNS('http://www.w3.org/2000/svg','text');
 centerSub.setAttribute('x','600');centerSub.setAttribute('y','230');
 centerSub.setAttribute('text-anchor','middle');centerSub.setAttribute('fill','#8899aa');
 centerSub.setAttribute('font-size','14');
-centerSub.textContent='Select 2+ numbers that sum to target. Tap cells or use D-pad + ACT.';
+centerSub.textContent='Tap 2+ numbers that sum to target. Tap again to deselect.';
 centerArea.appendChild(centerSub);
-setCursor(1,0,0,size);setCursor(2,0,0,size);
 gameState.phase='input';
 }
 
@@ -760,9 +692,8 @@ const instr=document.createElementNS('http://www.w3.org/2000/svg','text');
 instr.setAttribute('x','600');instr.setAttribute('y','200');
 instr.setAttribute('text-anchor','middle');instr.setAttribute('fill','#4ecdc4');
 instr.setAttribute('font-size','16');
-instr.textContent='Recreate the grid! ACT cycles colors. First to match wins!';
+instr.textContent='Recreate the grid! Tap cells to cycle colors. First to match wins!';
 centerArea.appendChild(instr);
-setCursor(1,0,0,size);setCursor(2,0,0,size);
 gameState.phase='input';
 },4000);
 }
@@ -796,6 +727,8 @@ p1Rect.setAttribute('x','80');p1Rect.setAttribute('y','200');
 p1Rect.setAttribute('width','220');p1Rect.setAttribute('height','220');
 p1Rect.setAttribute('rx','20');p1Rect.setAttribute('fill','#ff4444');
 p1Rect.setAttribute('id','p1-react');
+p1Rect.style.cursor='pointer';
+p1Rect.addEventListener('click',()=>handleReaction(1));
 p1Area.appendChild(p1Rect);
 const p1Label=document.createElementNS('http://www.w3.org/2000/svg','text');
 p1Label.setAttribute('x','190');p1Label.setAttribute('y','320');
@@ -808,6 +741,8 @@ p2Rect.setAttribute('x','900');p2Rect.setAttribute('y','200');
 p2Rect.setAttribute('width','220');p2Rect.setAttribute('height','220');
 p2Rect.setAttribute('rx','20');p2Rect.setAttribute('fill','#ff4444');
 p2Rect.setAttribute('id','p2-react');
+p2Rect.style.cursor='pointer';
+p2Rect.addEventListener('click',()=>handleReaction(2));
 p2Area.appendChild(p2Rect);
 const p2Label=document.createElementNS('http://www.w3.org/2000/svg','text');
 p2Label.setAttribute('x','1010');p2Label.setAttribute('y','320');
@@ -819,14 +754,14 @@ const centerInstr=document.createElementNS('http://www.w3.org/2000/svg','text');
 centerInstr.setAttribute('x','600');centerInstr.setAttribute('y','200');
 centerInstr.setAttribute('text-anchor','middle');centerInstr.setAttribute('fill','#ff6b6b');
 centerInstr.setAttribute('font-size','22');
-centerInstr.textContent='WAIT FOR GREEN... THEN TAP ACT BUTTON!';
+centerInstr.textContent='WAIT FOR GREEN... THEN TAP YOUR AREA!';
 centerArea.appendChild(centerInstr);
 setTimeout(()=>{
 gameState.reactionState='go';
 document.getElementById('p1-react').setAttribute('fill','#44ff44');
 document.getElementById('p2-react').setAttribute('fill','#44ff44');
-document.getElementById('p1-react-label').textContent='TAP ACT BUTTON!';
-document.getElementById('p2-react-label').textContent='TAP ACT BUTTON!';
+document.getElementById('p1-react-label').textContent='TAP NOW!';
+document.getElementById('p2-react-label').textContent='TAP NOW!';
 centerInstr.textContent='GO GO GO!';centerInstr.setAttribute('fill','#4ecdc4');
 gameState.reactionStartTime=Date.now();
 },gameState.reactionTime);
@@ -863,9 +798,8 @@ const sub=document.createElementNS('http://www.w3.org/2000/svg','text');
 sub.setAttribute('x','600');sub.setAttribute('y','230');
 sub.setAttribute('text-anchor','middle');sub.setAttribute('fill','#8899aa');
 sub.setAttribute('font-size','13');
-sub.textContent='Tap cells or use D-pad. ACT to confirm. First to get all correct wins!';
+sub.textContent='Tap cells that match the rule. First to get ALL correct wins!';
 centerArea.appendChild(sub);
-setCursor(1,0,0,size);setCursor(2,0,0,size);
 gameState.phase='input';
 }
 
@@ -932,11 +866,10 @@ const instr=document.createElementNS('http://www.w3.org/2000/svg','text');
 instr.setAttribute('x','600');instr.setAttribute('y','320');
 instr.setAttribute('text-anchor','middle');instr.setAttribute('fill','#8899aa');
 instr.setAttribute('font-size','14');
-instr.textContent='Recreate the ROTATED pattern on your board!';
+instr.textContent='Recreate the ROTATED pattern on your board! Tap cells to toggle.';
 centerArea.appendChild(instr);
 createPlayerGrid(1,size,50,120);
 createPlayerGrid(2,size,870,120);
-setCursor(1,0,0,size);setCursor(2,0,0,size);
 gameState.phase='input';
 }
 
@@ -983,19 +916,19 @@ const instr=document.createElementNS('http://www.w3.org/2000/svg','text');
 instr.setAttribute('x','600');instr.setAttribute('y','250');
 instr.setAttribute('text-anchor','middle');instr.setAttribute('fill','#8899aa');
 instr.setAttribute('font-size','14');
-instr.textContent='Navigate to a letter, then tap ACT to select it';
+instr.textContent='Tap letters on your grid to spell the word!';
 centerArea.appendChild(instr);
 const p1Bank=document.createElementNS('http://www.w3.org/2000/svg','text');
 p1Bank.setAttribute('x','190');p1Bank.setAttribute('y','320');
 p1Bank.setAttribute('text-anchor','middle');p1Bank.setAttribute('fill','#64d8ff');
 p1Bank.setAttribute('font-size','14');
-p1Bank.textContent='Use D-pad + ACT button';
+p1Bank.textContent='P1: Tap letters';
 p1Area.appendChild(p1Bank);
 const p2Bank=document.createElementNS('http://www.w3.org/2000/svg','text');
 p2Bank.setAttribute('x','1010');p2Bank.setAttribute('y','320');
 p2Bank.setAttribute('text-anchor','middle');p2Bank.setAttribute('fill','#ff6b6b');
 p2Bank.setAttribute('font-size','14');
-p2Bank.textContent='Use D-pad + ACT button';
+p2Bank.textContent='P2: Tap letters';
 p2Area.appendChild(p2Bank);
 const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 createPlayerGrid(1,5,30,350,letters.slice(0,25));
@@ -1112,7 +1045,7 @@ setTimeout(()=>rect.setAttribute('fill','#0f1830'),400);
 }
 }
 
-// ===== INPUT HANDLING =====
+// ===== INPUT HANDLING (CLICK-AND-SELECT ONLY) =====
 function handleCellClick(player,r,c){
 if(gameState.phase!=='input')return;
 if(player!==localPlayer)return;
@@ -1127,6 +1060,7 @@ if(mode==='math_blitz'){
 const selected=player===1?gameState.p1.selected:gameState.p2.selected;
 const idx=r*gameState.gridSize+c;
 if(!selected.includes(idx)){selected.push(idx);document.getElementById(`${player===1?'p1':'p2'}-cell-${r}-${c}`).setAttribute('fill','#64d8ff');}
+else{selected.splice(selected.indexOf(idx),1);document.getElementById(`${player===1?'p1':'p2'}-cell-${r}-${c}`).setAttribute('fill','#0f1830');}
 checkMathSum(player);
 }
 if(mode==='color_war')cycleColor(player,r,c);
@@ -1134,6 +1068,7 @@ if(mode==='sequence_battle'){
 const selected=player===1?gameState.p1.selected:gameState.p2.selected;
 const idx=r*gameState.gridSize+c;
 if(!selected.includes(idx)){selected.push(idx);document.getElementById(`${player===1?'p1':'p2'}-cell-${r}-${c}`).setAttribute('fill','#64d8ff');}
+else{selected.splice(selected.indexOf(idx),1);document.getElementById(`${player===1?'p1':'p2'}-cell-${r}-${c}`).setAttribute('fill','#0f1830');}
 checkSequence(player);
 }
 if(mode==='spatial_clash')toggleSpatialCell(player,r,c);
@@ -1146,72 +1081,27 @@ updateWordInput(player,letters[idx]);
 if(mode==='logic_faceoff')checkLogicGuess(player);
 }
 
-window.handleTouch=function(player,action){
-if(gameState.phase!=='input'&&!(gameState.phase==='playing'&&getCurrentMode()==='reaction_duel'))return;
-if(player==='p1'&&localPlayer!==1)return;
-if(player==='p2'&&localPlayer!==2)return;
-const p=player==='p1'?1:2;
-const cursor=p===1?gameState.p1.cursor:gameState.p2.cursor;
-const size=gameState.gridSize;
-
-if(action==='up'&&cursor.r>0){cursor.r--;setCursor(p,cursor.r,cursor.c,size);}
-if(action==='down'&&cursor.r<size-1){cursor.r++;setCursor(p,cursor.r,cursor.c,size);}
-if(action==='left'&&cursor.c>0){cursor.c--;setCursor(p,cursor.r,cursor.c,size);}
-if(action==='right'&&cursor.c<size-1){cursor.c++;setCursor(p,cursor.r,cursor.c,size);}
-
-if(action==='action'){
-const mode=getCurrentMode();
-if(mode==='reaction_duel'){handleReaction(p);return;}
-if(mode==='memory_race'){
-const input=p===1?gameState.p1.input:gameState.p2.input;
-input.push({r:cursor.r,c:cursor.c});
-highlightPlayerCell(p,cursor.r,cursor.c,'#64d8ff',300);
-checkMemoryInput(p);
-}
-if(mode==='math_blitz'){
-const selected=p===1?gameState.p1.selected:gameState.p2.selected;
-const idx=cursor.r*size+cursor.c;
-if(!selected.includes(idx)){selected.push(idx);document.getElementById(`${p===1?'p1':'p2'}-cell-${cursor.r}-${cursor.c}`).setAttribute('fill','#64d8ff');}
-checkMathSum(p);
-}
-if(mode==='color_war')cycleColor(p,cursor.r,cursor.c);
-if(mode==='sequence_battle'){
-const selected=p===1?gameState.p1.selected:gameState.p2.selected;
-const idx=cursor.r*size+cursor.c;
-if(!selected.includes(idx)){selected.push(idx);document.getElementById(`${p===1?'p1':'p2'}-cell-${cursor.r}-${cursor.c}`).setAttribute('fill','#64d8ff');}
-checkSequence(p);
-}
-if(mode==='spatial_clash')toggleSpatialCell(p,cursor.r,cursor.c);
-if(mode==='word_sprint'){
-const idx=cursor.r*5+cursor.c;
-const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-updateWordInput(p,letters[idx]);
-}
-if(mode==='logic_faceoff')checkLogicGuess(p);
-}
-};
-
-// ===== KEYBOARD SUPPORT (Optional — tap works too!) =====
+// ===== KEYBOARD SUPPORT (Optional) =====
 document.addEventListener('keydown',function(e){
 if(gameState.phase!=='input'&&!(gameState.phase==='playing'&&getCurrentMode()==='reaction_duel'))return;
 const key=e.key.toLowerCase();
 const size=gameState.gridSize;
 
-// P1: WASD keys (optional on desktop)
+// P1: WASD keys
 if(key==='w'&&gameState.p1.cursor.r>0){gameState.p1.cursor.r--;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
 if(key==='s'&&gameState.p1.cursor.r<size-1){gameState.p1.cursor.r++;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
 if(key==='a'&&gameState.p1.cursor.c>0){gameState.p1.cursor.c--;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
 if(key==='d'&&gameState.p1.cursor.c<size-1){gameState.p1.cursor.c++;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
 
-// P2: Arrow keys (optional on desktop)
+// P2: Arrow keys
 if(e.key==='ArrowUp'&&gameState.p2.cursor.r>0){gameState.p2.cursor.r--;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
 if(e.key==='ArrowDown'&&gameState.p2.cursor.r<size-1){gameState.p2.cursor.r++;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
 if(e.key==='ArrowLeft'&&gameState.p2.cursor.c>0){gameState.p2.cursor.c--;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
 if(e.key==='ArrowRight'&&gameState.p2.cursor.c<size-1){gameState.p2.cursor.c++;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
 
 // Confirm
-if(key==='q')handleTouch('p1','action');
-if(key==='u')handleTouch('p2','action');
+if(key==='q')handleCellClick(1,gameState.p1.cursor.r,gameState.p1.cursor.c);
+if(key==='u')handleCellClick(2,gameState.p2.cursor.r,gameState.p2.cursor.c);
 
 // Reaction
 if(key==='e'&&getCurrentMode()==='reaction_duel')handleReaction(1);
@@ -1219,54 +1109,88 @@ if(key==='o'&&getCurrentMode()==='reaction_duel')handleReaction(2);
 });
 </script>
 
-<!-- MUSIC PLAYER -->
+<!-- MUSIC PLAYER: Stray Kids - Run It (auto-plays on page load) -->
 <div id="music-player" style="position:fixed;bottom:10px;right:10px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
-<iframe id="yt-player" width="1" height="1" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<iframe id="yt-player" width="1" height="1" src="https://www.youtube.com/embed/Q7IFjVUUb_E?autoplay=1&mute=0&loop=1&playlist=Q7IFjVUUb_E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 </div>
 
-<script>
-// ===== REAL MUSIC PLAYER =====
-const SKZ_PLAYLIST = [
-    {title:"God's Menu", id:"TQTlCHxyuu8"},
-    {title:"Thunderous", id:"EaswWiwMVs8"},
-    {title:"CASE 143", id:"jWkaqXjATNk"},
-    {title:"Back Door", id:"X-uJtV8ScYk"},
-    {title:"S-Class", id:"H-1B9QRb2e0"},
-    {title:"Chk Chk Boom", id:"0P0a8PbKTxU"},
-    {title:"Maniac", id:"OvioeSKejt0"},
-    {title:"LALALALA", id:"dBDkEXB0z1E"},
-    {title:"Rock-Star", id:"4R7vRhvNRng"},
-    {title:"Hall of Fame", id:"3P-wT7234z0"}
-];
-let musicPlaying = false;
-let currentTrackIdx = 0;
-
-window.toggleMusic = function(){
-    const iframe = document.getElementById('yt-player');
-    const label = document.getElementById('soundtrack-label');
-    if(!musicPlaying){
-        const track = SKZ_PLAYLIST[currentTrackIdx];
-        iframe.src = `https://www.youtube.com/embed/${track.id}?autoplay=1&mute=0&loop=1&playlist=${track.id}`;
-        musicPlaying = true;
-        if(label) label.textContent = `▶️ PLAYING: Stray Kids — ${track.title}`;
-    } else {
-        iframe.src = '';
-        musicPlaying = false;
-        currentTrackIdx = (currentTrackIdx + 1) % SKZ_PLAYLIST.length;
-        const next = SKZ_PLAYLIST[currentTrackIdx];
-        if(label) label.textContent = `🎵 TAP TO PLAY MUSIC: Stray Kids — ${next.title}`;
-    }
-};
-
-// Auto-cycle label even if not playing
-setInterval(()=>{
-    if(!musicPlaying){
-        currentTrackIdx = (currentTrackIdx + 1) % SKZ_PLAYLIST.length;
-        const label = document.getElementById('soundtrack-label');
-        if(label) label.textContent = `🎵 TAP TO PLAY MUSIC: Stray Kids — ${SKZ_PLAYLIST[currentTrackIdx].title}`;
-    }
-}, 8000);
-</script>
-
 </body>
-</html>
+</html>''')
+    f.flush()
+
+# Verify the file is complete and valid
+with open('/mnt/agents/output/neural_duel.html', 'r') as f:
+    content = f.read()
+
+# Check key parts
+print(f"Total file size: {len(content)} chars")
+print(f"Contains </html>: {content.strip().endswith('</html>')}")
+print(f"Contains </body>: {'</body>' in content}")
+print(f"Contains </script>: {'</script>' in content}")
+print(f"Contains iframe: {'iframe' in content}")
+print(f"Contains Run It: {'Run It' in content}")
+print(f"Contains joystick: {'joystick' in content.lower()}")
+print(f"Contains dpad: {'dpad' in content.lower()}")
+print(f"Contains touch-controls: {'touch-controls' in content}")
+print(f"Contains handleTouch: {'handleTouch' in content}")
+print(f"Contains handleCellClick: {'handleCellClick' in content}")
+print(f"Contains ontouchstart: {'ontouchstart' in content}")
+print(f"Contains onmousedown: {'onmousedown' in content}")
+
+# Check for any unclosed tags or issues
+import re
+html_tags = re.findall(r'<(/?)(\w+)[^>]*>', content)
+open_tags = []
+for closing, tag in html_tags:
+    if tag in ['br', 'hr', 'img', 'input', 'meta', 'link', 'base', 'area', 'col', 'embed', 'param', 'source', 'track', 'wbr']:
+        continue
+    if not closing:
+        open_tags.append(tag)
+    else:
+        if open_tags and open_tags[-1] == tag:
+            open_tags.pop()
+        else:
+            print(f"Mismatched tag: </{tag}> (expected </{open_tags[-1] if open_tags else 'none'}>)")
+
+if open_tags:
+    print(f"Unclosed tags: {open_tags}")
+else:
+    print("All tags properly closed!")
+
+# The regex check is confused by SVG self-closing elements and template literals. 
+# Let me do a simpler check - just verify the HTML structure is valid by parsing it
+
+# Check that key changes are present
+with open('/mnt/agents/output/neural_duel.html', 'r') as f:
+    content = f.read()
+
+# Verify the important changes:
+checks = {
+    "No joystick/dpad SVG elements": "touch-controls" not in content,
+    "No handleTouch function": "handleTouch" not in content,
+    "No ontouchstart handlers": "ontouchstart" not in content,
+    "No onmousedown handlers": "onmousedown" not in content,
+    "handleCellClick exists": "handleCellClick" in content,
+    "Click event listeners on cells": "addEventListener('click'" in content,
+    "Stray Kids Run It music": "Q7IFjVUUb_E" in content,
+    "Auto-play enabled": "autoplay=1" in content,
+    "Music label on title screen": "Now Playing: Stray Kids" in content,
+    "How to play updated for tap": "Tap cells" in content,
+    "No D-pad in how-to-play": "D-PAD" not in content,
+    "Reaction duel uses click": "addEventListener('click',()=>handleReaction" in content,
+    "Math blitz supports deselect": "splice(selected.indexOf(idx),1)" in content,
+    "Valid HTML ending": content.strip().endswith("</html>"),
+    "Valid body ending": "</body>" in content,
+    "Valid SVG ending": "</svg>" in content,
+}
+
+all_pass = True
+for check, result in checks.items():
+    status = "✅" if result else "❌"
+    print(f"{status} {check}")
+    if not result:
+        all_pass = False
+
+print(f"\n{'All checks passed!' if all_pass else 'Some checks failed!'}")
+print(f"\nFile size: {len(content):,} characters")
+
