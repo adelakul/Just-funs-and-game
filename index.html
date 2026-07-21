@@ -205,10 +205,10 @@ window.firebaseOnDisconnect = onDisconnect;
 <div id="music-player">
 <div id="song-title">🎵 Stray Kids</div>
 <audio id="bg-music" style="width:100%;height:24px;margin:5px 0" controls>
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  <source src="music/stray-kids-run-it-m-v-128-ytshorts.savetube.me.mp3" type="audio/mpeg">
   Your browser does not support the audio element.
 </audio>
-<div style="margin-top:8px;color:#a0a8ff;font-size:10px" id="playlist-info">Click for more songs →</div>
+<div style="margin-top:8px;color:#a0a8ff;font-size:10px" id="playlist-info">🎵 Playlist playing</div>
 <button onclick="playPlaylist()">▶ Play Mix</button>
 <button onclick="toggleMute()">🔊 Mute</button>
 </div>
@@ -216,11 +216,10 @@ window.firebaseOnDisconnect = onDisconnect;
 <script>
 // ===== MUSIC PLAYLIST =====
 const playlist = [
-{title: 'Run It', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
-{title: 'God\'s Menu', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'},
-{title: 'MANIAC', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'},
-{title: 'S-Class', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'},
-{title: 'Back Door', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'}
+{title: 'Run It', url: 'music/stray-kids-run-it-m-v-128-ytshorts.savetube.me.mp3'},
+{title: 'God\'s Menu', url: 'music/stray-kids-shen-menyu-god-s-menu-m-v-128-ytshorts.savetube.me.mp3'},
+{title: 'MANIAC', url: 'music/stray-kids-maniac-m-v-128-ytshorts.savetube.me.mp3'},
+{title: 'S-Class', url: 'music/stray-kids-teug-s-class-m-v-128-ytshorts.savetube.me.mp3'}
 ];
 let currentSongIndex = 0;
 const bgMusic = document.getElementById('bg-music');
