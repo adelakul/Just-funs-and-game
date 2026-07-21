@@ -1,7 +1,4 @@
-
-# Let me write the file directly instead of using string literals
-with open('/mnt/agents/output/neural_duel.html', 'w') as f:
-    f.write('''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -33,7 +30,7 @@ const firebaseConfig = {
     authDomain: "game-1e8b3.firebaseapp.com",
     databaseURL: "https://game-1e8b3-default-rtdb.firebaseio.com",
     projectId: "game-1e8b3",
-    storageBucket: "ame-1e8b3.firebasestorage.app",
+    storageBucket: "game-1e8b3.firebasestorage.app",
     messagingSenderId: "154724487657",
     appId: "1:154724487657:web:8c2b1142e6cb0969dafb78"
 };
@@ -59,7 +56,9 @@ window.firebaseOnDisconnect = onDisconnect;
 <filter id="strong-glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
 <rect width="1200" height="675" fill="url(#bg-grad)" rx="16"/>
-<g stroke="#1e2a4f" stroke-width="0.5" opacity="0.15"><line x1="0" y1="112.5" x2="1200" y2="112.5"/><line x1="0" y1="225" x2="1200" y2="225"/><line x1="0" y1="337.5" x2="1200" y2="337.5"/><line x1="0" y1="450" x2="1200" y2="450"/><line x1="0" y1="562.5" x2="1200" y2="562.5"/><line x1="200" y1="0" x2="200" y2="675"/><line x1="400" y1="0" x2="400" y2="675"/><line x1="600" y1="0" x2="600" y2="675"/><line x1="800" y1="0" x2="800" y2="675"/><line x1="1000" y1="0" x2="1000" y2="675"/></g>
+<g stroke="#1e2a4f" stroke-width="0.5" opacity="0.15">
+<line x1="0" y1="112.5" x2="1200" y2="112.5"/><line x1="0" y1="225" x2="1200" y2="225"/><line x1="0" y1="337.5" x2="1200" y2="337.5"/><line x1="0" y1="450" x2="1200" y2="450"/><line x1="0" y1="562.5" x2="1200" y2="562.5"/><line x1="300" y1="0" x2="300" y2="675"/><line x1="600" y1="0" x2="600" y2="675"/><line x1="900" y1="0" x2="900" y2="675"/>
+</g>
 
 <!-- TITLE SCREEN -->
 <g id="title-screen">
@@ -69,9 +68,9 @@ window.firebaseOnDisconnect = onDisconnect;
 <rect x="380" y="280" width="440" height="55" rx="12" fill="#0a1020" stroke="#3a5a8f" stroke-width="2"/>
 <text x="410" y="315" fill="#556677" font-size="16" id="room-code-label">Enter Room Code:</text>
 <text x="600" y="315" text-anchor="middle" fill="#64d8ff" font-size="20" font-weight="bold" id="room-code-display">----</text>
-<g class="btn" onclick="generateRoomCode()"><rect x="380" y="350" width="210" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="485" y="382" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">🎲 NEW ROOM</text></g>
-<g class="btn" onclick="joinRoomPrompt()"><rect x="610" y="350" width="210" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="715" y="382" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">🔗 JOIN ROOM</text></g>
-<g class="btn" onclick="showHowToPlay()"><rect x="420" y="410" width="360" height="36" rx="18" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="600" y="435" text-anchor="middle" fill="#ffe66d" font-size="14" font-weight="bold">📖 HOW TO PLAY</text></g>
+<g class="btn" onclick="generateRoomCode()"><rect x="380" y="350" width="210" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="485" y="382" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">CREATE ROOM</text></g>
+<g class="btn" onclick="joinRoomPrompt()"><rect x="610" y="350" width="210" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="715" y="382" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">JOIN ROOM</text></g>
+<g class="btn" onclick="showHowToPlay()"><rect x="420" y="410" width="360" height="36" rx="18" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="600" y="435" text-anchor="middle" fill="#ffe66d" font-size="14">📖 HOW TO PLAY</text></g>
 <text x="600" y="465" text-anchor="middle" fill="#556677" font-size="13">📱 Share the room code — both players tap to play!</text>
 <text x="600" y="485" text-anchor="middle" fill="#445566" font-size="11">Optimized for phones — just tap cells directly!</text>
 <text x="600" y="575" text-anchor="middle" fill="#445566" font-size="10">🎵 Now Playing: Stray Kids — Run It</text>
@@ -84,22 +83,22 @@ window.firebaseOnDisconnect = onDisconnect;
 <text x="600" y="250" text-anchor="middle" fill="#64d8ff" font-size="36" font-weight="bold">WAITING FOR OPPONENT...</text>
 <text x="600" y="300" text-anchor="middle" fill="#a0a8ff" font-size="20" id="waiting-room-code">Room: ----</text>
 <text x="600" y="340" text-anchor="middle" fill="#8899aa" font-size="16">Share this code with your friend to start!</text>
-<g class="btn pulse" onclick="cancelRoom()"><rect x="450" y="400" width="300" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="600" y="432" text-anchor="middle" fill="#ff6b6b" font-size="16">CANCEL</text></g>
+<g class="btn pulse" onclick="cancelRoom()"><rect x="450" y="400" width="300" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="600" y="432" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">CANCEL</text></g>
 </g>
 
 <!-- MODE SELECT -->
 <g id="mode-select" display="none">
 <text x="600" y="70" text-anchor="middle" fill="#64d8ff" font-family="'Courier New',monospace" font-size="28" font-weight="bold">SELECT DUEL MODE</text>
 <text x="600" y="95" text-anchor="middle" fill="#8899aa" font-size="13" id="mode-select-room">Room: ----</text>
-<g class="btn" onclick="hostSelectMode('memory_race')"><rect x="80" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/><text x="200" y="148" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">🧠 MEMORY RACE</text><text x="200" y="170" text-anchor="middle" fill="#8899aa" font-size="10">Repeat patterns faster</text><text x="200" y="188" text-anchor="middle" fill="#556677" font-size="9">First to complete wins</text></g>
-<g class="btn" onclick="hostSelectMode('math_blitz')"><rect x="350" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#ff6b6b" stroke-width="2"/><text x="470" y="148" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">🔢 MATH BLITZ</text><text x="470" y="170" text-anchor="middle" fill="#8899aa" font-size="10">Solve equations first</text><text x="470" y="188" text-anchor="middle" fill="#556677" font-size="9">Speed + accuracy battle</text></g>
-<g class="btn" onclick="hostSelectMode('color_war')"><rect x="620" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="740" y="148" text-anchor="middle" fill="#ffe66d" font-size="16" font-weight="bold">🎨 COLOR WAR</text><text x="740" y="170" text-anchor="middle" fill="#8899aa" font-size="10">Claim territory by color</text><text x="740" y="188" text-anchor="middle" fill="#556677" font-size="9">Strategic color matching</text></g>
-<g class="btn" onclick="hostSelectMode('reaction_duel')"><rect x="890" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#4ecdc4" stroke-width="2"/><text x="1010" y="148" text-anchor="middle" fill="#4ecdc4" font-size="16" font-weight="bold">⚡ REACTION DUEL</text><text x="1010" y="170" text-anchor="middle" fill="#8899aa" font-size="10">Click when target appears</text><text x="1010" y="188" text-anchor="middle" fill="#556677" font-size="9">Pure reflex showdown</text></g>
-<g class="btn" onclick="hostSelectMode('sequence_battle')"><rect x="80" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#a8e6cf" stroke-width="2"/><text x="200" y="258" text-anchor="middle" fill="#a8e6cf" font-size="16" font-weight="bold">🔗 SEQUENCE BATTLE</text><text x="200" y="280" text-anchor="middle" fill="#8899aa" font-size="10">Chain reactions faster</text><text x="200" y="298" text-anchor="middle" fill="#556677" font-size="9">Build longer chains</text></g>
-<g class="btn" onclick="hostSelectMode('spatial_clash')"><rect x="350" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#c7ceea" stroke-width="2"/><text x="470" y="258" text-anchor="middle" fill="#c7ceea" font-size="16" font-weight="bold">🧩 SPATIAL CLASH</text><text x="470" y="280" text-anchor="middle" fill="#8899aa" font-size="10">Mirror patterns under time</text><text x="470" y="298" text-anchor="middle" fill="#556677" font-size="9">Spatial + speed combo</text></g>
-<g class="btn" onclick="hostSelectMode('word_sprint')"><rect x="620" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#ff8b94" stroke-width="2"/><text x="740" y="258" text-anchor="middle" fill="#ff8b94" font-size="16" font-weight="bold">🔤 WORD SPRINT</text><text x="740" y="280" text-anchor="middle" fill="#8899aa" font-size="10">Type words from fragments</text><text x="740" y="298" text-anchor="middle" fill="#556677" font-size="9">Vocabulary + typing speed</text></g>
-<g class="btn" onclick="hostSelectMode('logic_faceoff')"><rect x="890" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#ffd93d" stroke-width="2"/><text x="1010" y="258" text-anchor="middle" fill="#ffd93d" font-size="16" font-weight="bold">🎯 LOGIC FACEOFF</text><text x="1010" y="280" text-anchor="middle" fill="#8899aa" font-size="10">Deduce the hidden rule</text><text x="1010" y="298" text-anchor="middle" fill="#556677" font-size="9">Pattern induction battle</text></g>
-<g class="btn" onclick="hostSelectMode('mixed_mayhem')"><rect x="300" y="340" width="600" height="70" rx="12" fill="#1a0a30" stroke="#ff44ff" stroke-width="3"/><text x="600" y="370" text-anchor="middle" fill="#ff44ff" font-size="20" font-weight="bold">🔥 MIXED MAYHEM (RANDOM)</text><text x="600" y="395" text-anchor="middle" fill="#aa88aa" font-size="11">All modes, random each round. Ultimate test.</text></g>
+<g class="btn" onclick="hostSelectMode('memory_race')"><rect x="80" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/><text x="200" y="145" text-anchor="middle" fill="#64d8ff" font-size="18" font-weight="bold">🧠 MEMORY</text><text x="200" y="170" text-anchor="middle" fill="#8899aa" font-size="12">Repeat pattern!</text></g>
+<g class="btn" onclick="hostSelectMode('math_blitz')"><rect x="350" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#ff6b6b" stroke-width="2"/><text x="470" y="145" text-anchor="middle" fill="#ff6b6b" font-size="18" font-weight="bold">🔢 MATH</text><text x="470" y="170" text-anchor="middle" fill="#8899aa" font-size="12">Solve faster!</text></g>
+<g class="btn" onclick="hostSelectMode('color_war')"><rect x="620" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="740" y="145" text-anchor="middle" fill="#ffe66d" font-size="18" font-weight="bold">🎨 COLOR</text><text x="740" y="170" text-anchor="middle" fill="#8899aa" font-size="12">Match colors!</text></g>
+<g class="btn" onclick="hostSelectMode('reaction_duel')"><rect x="890" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#4ecdc4" stroke-width="2"/><text x="1010" y="145" text-anchor="middle" fill="#4ecdc4" font-size="18" font-weight="bold">⚡ REACTION</text><text x="1010" y="170" text-anchor="middle" fill="#8899aa" font-size="12">Fastest wins!</text></g>
+<g class="btn" onclick="hostSelectMode('sequence_battle')"><rect x="80" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#a8e6cf" stroke-width="2"/><text x="200" y="255" text-anchor="middle" fill="#a8e6cf" font-size="18" font-weight="bold">🔗 SEQUENCE</text><text x="200" y="280" text-anchor="middle" fill="#8899aa" font-size="12">Build chains!</text></g>
+<g class="btn" onclick="hostSelectMode('spatial_clash')"><rect x="350" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#c7ceea" stroke-width="2"/><text x="470" y="255" text-anchor="middle" fill="#c7ceea" font-size="18" font-weight="bold">🔄 SPATIAL</text><text x="470" y="280" text-anchor="middle" fill="#8899aa" font-size="12">Mirror it!</text></g>
+<g class="btn" onclick="hostSelectMode('word_sprint')"><rect x="620" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#ff8b94" stroke-width="2"/><text x="740" y="255" text-anchor="middle" fill="#ff8b94" font-size="18" font-weight="bold">📝 WORDS</text><text x="740" y="280" text-anchor="middle" fill="#8899aa" font-size="12">Spell fast!</text></g>
+<g class="btn" onclick="hostSelectMode('logic_faceoff')"><rect x="890" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#ffd93d" stroke-width="2"/><text x="1010" y="255" text-anchor="middle" fill="#ffd93d" font-size="18" font-weight="bold">🧩 LOGIC</text><text x="1010" y="280" text-anchor="middle" fill="#8899aa" font-size="12">Deduce!</text></g>
+<g class="btn" onclick="hostSelectMode('mixed_mayhem')"><rect x="300" y="340" width="600" height="70" rx="12" fill="#1a0a30" stroke="#ff44ff" stroke-width="3"/><text x="600" y="370" text-anchor="middle" fill="#ff44ff" font-size="20" font-weight="bold">🎲 MIXED MAYHEM - Random Mode!</text></g>
 <text x="600" y="460" text-anchor="middle" fill="#445566" font-size="12">Only the host (Player 1) can select the mode</text>
 </g>
 
@@ -137,7 +136,7 @@ window.firebaseOnDisconnect = onDisconnect;
 <rect x="200" y="200" width="800" height="200" rx="20" fill="#0a1020" stroke="#ffe66d" stroke-width="3" opacity="0.95"/>
 <text id="winner-text" x="600" y="280" text-anchor="middle" fill="#ffe66d" font-size="42" font-weight="bold" filter="url(#strong-glow)"></text>
 <text id="winner-sub" x="600" y="330" text-anchor="middle" fill="#8899aa" font-size="18"></text>
-<g class="btn" onclick="nextRound()"><rect x="450" y="350" width="300" height="45" rx="22" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="600" y="380" text-anchor="middle" fill="#64d8ff" font-size="16">NEXT ROUND</text></g>
+<g class="btn" onclick="nextRound()"><rect x="450" y="350" width="300" height="45" rx="22" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="600" y="380" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">NEXT ROUND</text></g>
 </g>
 
 <!-- MATCH OVER -->
@@ -147,8 +146,8 @@ window.firebaseOnDisconnect = onDisconnect;
 <text id="match-winner" x="600" y="250" text-anchor="middle" fill="#64d8ff" font-size="32"></text>
 <text id="final-stats" x="600" y="300" text-anchor="middle" fill="#8899aa" font-size="18"></text>
 <text id="match-rank" x="600" y="340" text-anchor="middle" fill="#ffaa44" font-size="22"></text>
-<g class="btn" onclick="showModeSelect()"><rect x="350" y="400" width="220" height="50" rx="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="460" y="432" text-anchor="middle" fill="#64d8ff" font-size="16">NEW DUEL</text></g>
-<g class="btn" onclick="showTitle()"><rect x="630" y="400" width="220" height="50" rx="25" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="740" y="432" text-anchor="middle" fill="#ff6b6b" font-size="16">MAIN MENU</text></g>
+<g class="btn" onclick="showModeSelect()"><rect x="350" y="400" width="220" height="50" rx="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="460" y="432" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">PLAY AGAIN</text></g>
+<g class="btn" onclick="showTitle()"><rect x="630" y="400" width="220" height="50" rx="25" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="740" y="432" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">MAIN MENU</text></g>
 </g>
 
 <!-- DISCONNECTED -->
@@ -156,7 +155,7 @@ window.firebaseOnDisconnect = onDisconnect;
 <rect width="1200" height="675" fill="#050814" opacity="0.95" rx="16"/>
 <text x="600" y="300" text-anchor="middle" fill="#ff6b6b" font-size="36" font-weight="bold">OPPONENT DISCONNECTED</text>
 <text x="600" y="350" text-anchor="middle" fill="#8899aa" font-size="18">Your opponent left the duel.</text>
-<g class="btn" onclick="showTitle()"><rect x="450" y="400" width="300" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="600" y="432" text-anchor="middle" fill="#64d8ff" font-size="16">RETURN TO MENU</text></g>
+<g class="btn" onclick="showTitle()"><rect x="450" y="400" width="300" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="600" y="432" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">BACK TO MENU</text></g>
 </g>
 
 <!-- HOW TO PLAY OVERLAY -->
@@ -198,11 +197,7 @@ window.firebaseOnDisconnect = onDisconnect;
 </div>
 
 <script>
-''')
-    f.flush()
-
-with open('/mnt/agents/output/neural_duel.html', 'a') as f:
-    f.write('''// ===== GLOBALS =====
+// ===== GLOBALS =====
 let db = null, roomRef = null, roomCode = '', playerRole = null, localPlayer = 1;
 let opponentConnected = false, roomUnsubscribe = null;
 
@@ -306,7 +301,6 @@ txt.setAttribute('font-weight','bold');
 txt.textContent=labels[r*size+c];
 g.appendChild(txt);
 }
-// Direct tap/click handler — no joystick needed
 g.addEventListener('click',()=>handleCellClick(player,r,c));
 area.appendChild(g);
 }
@@ -328,6 +322,41 @@ if(!el.getAttribute('data-locked'))el.setAttribute('stroke',player===1?'#3a6a9f'
 });
 const rect=document.getElementById(`${prefix}-cell-${r}-${c}`);
 if(rect){rect.setAttribute('stroke',player===1?'#64d8ff':'#ff6b6b');rect.setAttribute('stroke-width','3');}
+}
+
+function handleCellClick(player,r,c){
+const mode=getCurrentMode();
+if(mode==='memory_race'){
+if(player===1)gameState.p1.input.push({r,c});
+else gameState.p2.input.push({r,c});
+highlightPlayerCell(player,r,c,'#64d8ff',300);
+if(player===localPlayer)checkMemoryInput(player);
+}else if(mode==='math_blitz'){
+const idx=r*gameState.gridSize+c;
+const selected=player===1?gameState.p1.selected:gameState.p2.selected;
+const pos=selected.indexOf(idx);
+if(pos>-1)selected.splice(pos,1);
+else selected.push(idx);
+highlightPlayerCell(player,r,c,selected.includes(idx)?'#64d8ff':'#0f1830',0);
+if(player===localPlayer)checkMathSum(player);
+}else if(mode==='color_war'){
+if(player===localPlayer)cycleColor(player,r,c);
+}else if(mode==='reaction_duel'){
+// Handled by separate event listener
+}else if(mode==='sequence_battle'){
+const idx=r*gameState.gridSize+c;
+const selected=player===1?gameState.p1.selected:gameState.p2.selected;
+const pos=selected.indexOf(idx);
+if(pos>-1)selected.splice(pos,1);
+else selected.push(idx);
+highlightPlayerCell(player,r,c,selected.includes(idx)?'#64d8ff':'#0f1830',0);
+if(player===localPlayer)checkSequence(player);
+}else if(mode==='spatial_clash'){
+if(player===localPlayer)toggleSpatialCell(player,r,c);
+}else if(mode==='word_sprint'){
+const txt=document.querySelector(`#p${player}-cell-${r}-${c} text`);
+if(txt)updateWordInput(player,txt.textContent);
+}
 }
 
 // ===== FIREBASE / ROOM =====
@@ -485,7 +514,6 @@ else{winnerSub.textContent='Faster mind wins the round!';}
 }
 banner.setAttribute('display','block');
 if(result.p1Rounds>=4||result.p2Rounds>=4||gameState.round>=gameState.maxRounds){
-document.querySelector('#winner-banner .btn text').textContent='VIEW RESULTS';
 document.querySelector('#winner-banner .btn').setAttribute('onclick','showMatchOver()');
 }
 }
@@ -646,14 +674,6 @@ const selected=player===1?gameState.p1.selected:gameState.p2.selected;
 const nums=player===1?gameState.p1.nums:gameState.p2.nums;
 const sum=selected.reduce((s,idx)=>s+nums[idx],0);
 if(sum===gameState.target){reportWin(player);}
-else if(sum>gameState.target){
-const prefix=player===1?'p1':'p2';
-selected.forEach(idx=>{
-const r=Math.floor(idx/4),c=idx%4;
-document.getElementById(`${prefix}-cell-${r}-${c}`).setAttribute('fill','#0f1830');
-});
-if(player===1)gameState.p1.selected=[];else gameState.p2.selected=[];
-}
 }
 
 // ===== COLOR WAR =====
@@ -706,12 +726,11 @@ let current=colors.indexOf(rect.getAttribute('fill'));
 if(current===-1)current=0;
 const next=(current+1)%colors.length;
 rect.setAttribute('fill',colors[next]);
-const allColors=['#0f1830','#ff6b6b','#64d8ff','#ffe66d','#4ecdc4','#ff8b94','#c7ceea'];
 let match=true;
 for(let rr=0;rr<gameState.gridSize;rr++){
 for(let cc=0;cc<gameState.gridSize;cc++){
 const cell=document.getElementById(`${prefix}-cell-${rr}-${cc}`);
-const cellColor=allColors.indexOf(cell.getAttribute('fill'));
+const cellColor=colors.indexOf(cell.getAttribute('fill'));
 if(cellColor!==gameState.colorGrid[rr][cc])match=false;
 }
 }
@@ -918,18 +937,6 @@ instr.setAttribute('text-anchor','middle');instr.setAttribute('fill','#8899aa');
 instr.setAttribute('font-size','14');
 instr.textContent='Tap letters on your grid to spell the word!';
 centerArea.appendChild(instr);
-const p1Bank=document.createElementNS('http://www.w3.org/2000/svg','text');
-p1Bank.setAttribute('x','190');p1Bank.setAttribute('y','320');
-p1Bank.setAttribute('text-anchor','middle');p1Bank.setAttribute('fill','#64d8ff');
-p1Bank.setAttribute('font-size','14');
-p1Bank.textContent='P1: Tap letters';
-p1Area.appendChild(p1Bank);
-const p2Bank=document.createElementNS('http://www.w3.org/2000/svg','text');
-p2Bank.setAttribute('x','1010');p2Bank.setAttribute('y','320');
-p2Bank.setAttribute('text-anchor','middle');p2Bank.setAttribute('fill','#ff6b6b');
-p2Bank.setAttribute('font-size','14');
-p2Bank.textContent='P2: Tap letters';
-p2Area.appendChild(p2Bank);
 const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 createPlayerGrid(1,5,30,350,letters.slice(0,25));
 createPlayerGrid(2,5,850,350,letters.slice(0,25));
@@ -942,13 +949,6 @@ function updateWordInput(player,char){
 const input=player===1?gameState.p1:gameState.p2;
 if(char==='BACKSPACE'){input.wordInput=input.wordInput.slice(0,-1);}
 else if(char.length===1&&input.wordInput.length<12){input.wordInput+=char.toUpperCase();}
-const display=document.getElementById('word-display');
-if(display){
-const p1Text=gameState.p1.wordInput||'_';
-const p2Text=gameState.p2.wordInput||'_';
-if(localPlayer===1)display.textContent=`YOU: ${p1Text}  |  THEM: ${p2Text.replace(/./g,'*')}`;
-else display.textContent=`THEM: ${p1Text.replace(/./g,'*')}  |  YOU: ${p2Text}`;
-}
 if(input.wordInput===gameState.words[gameState.currentWordIndex]){
 gameState.currentWordIndex++;
 if(gameState.currentWordIndex>=gameState.words.length){reportWin(player);}
@@ -979,218 +979,15 @@ const a=randInt(1,9),b=randInt(1,9);
 examples.push({a,b,valid:rule.check(a,b)});
 }
 gameState.logicExamples=examples;
-const exGroup=document.createElementNS('http://www.w3.org/2000/svg','g');
-exGroup.setAttribute('transform','translate(420,130)');
-examples.forEach((ex,i)=>{
-const y=i*45;
-const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
-rect.setAttribute('x','0');rect.setAttribute('y',y);
-rect.setAttribute('width','120');rect.setAttribute('height','38');
-rect.setAttribute('rx','8');rect.setAttribute('fill',ex.valid?'#1a4a2a':'#4a1a1a');
-rect.setAttribute('stroke',ex.valid?'#4ecdc4':'#ff6b6b');
-exGroup.appendChild(rect);
-const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
-txt.setAttribute('x','60');txt.setAttribute('y',y+25);
-txt.setAttribute('text-anchor','middle');txt.setAttribute('fill','#fff');
-txt.setAttribute('font-size','16');txt.setAttribute('font-weight','bold');
-txt.textContent=`${ex.a}, ${ex.b}`;
-exGroup.appendChild(txt);
-const status=document.createElementNS('http://www.w3.org/2000/svg','text');
-status.setAttribute('x','140');status.setAttribute('y',y+25);
-status.setAttribute('fill',ex.valid?'#4ecdc4':'#ff6b6b');
-status.setAttribute('font-size','14');status.setAttribute('font-weight','bold');
-status.textContent=ex.valid?'✓':'✗';
-exGroup.appendChild(status);
-});
-centerArea.appendChild(exGroup);
-const label=document.createElementNS('http://www.w3.org/2000/svg','text');
-label.setAttribute('x','600');label.setAttribute('y','115');
-label.setAttribute('text-anchor','middle');label.setAttribute('fill','#ffe66d');
-label.setAttribute('font-size','18');label.setAttribute('font-weight','bold');
-label.textContent='DEDUCE THE HIDDEN RULE!';
-centerArea.appendChild(label);
-const sub=document.createElementNS('http://www.w3.org/2000/svg','text');
-sub.setAttribute('x','600');sub.setAttribute('y','410');
-sub.setAttribute('text-anchor','middle');sub.setAttribute('fill','#8899aa');
-sub.setAttribute('font-size','13');
-sub.textContent='Pick 2 numbers. ACT = Valid guess. First to deduce rule wins!';
-centerArea.appendChild(sub);
-const nums=[];
-for(let i=1;i<=9;i++)nums.push(i);
-createPlayerGrid(1,3,80,140,nums);
-createPlayerGrid(2,3,900,140,nums);
-gameState.p1.cursor={r:0,c:0};gameState.p2.cursor={r:0,c:0};
-setCursor(1,0,0,3);setCursor(2,0,0,3);
+document.querySelector('#center-area').innerHTML='';
+const instr=document.createElementNS('http://www.w3.org/2000/svg','text');
+instr.setAttribute('x','600');instr.setAttribute('y','200');
+instr.setAttribute('text-anchor','middle');instr.setAttribute('fill','#ffaa44');
+instr.setAttribute('font-size','18');
+instr.textContent=`Rule: ${rule.name} - Study examples below`;
+centerArea.appendChild(instr);
 gameState.phase='input';
 }
-
-function checkLogicGuess(player){
-const cursor=player===1?gameState.p1.cursor:gameState.p2.cursor;
-const idx=cursor.r*3+cursor.c;
-const nums=[];
-for(let i=1;i<=9;i++)nums.push(i);
-const a=nums[idx];
-const b=randInt(1,9);
-const correct=gameState.logicRule.check(a,b);
-const prefix=player===1?'p1':'p2';
-const rect=document.getElementById(`${prefix}-cell-${cursor.r}-${cursor.c}`);
-if(correct){
-rect.setAttribute('fill','#4ecdc4');
-rect.setAttribute('data-locked','true');
-const locked=document.querySelectorAll(`[id^="${prefix}-cell-"][data-locked="true"]`).length;
-if(locked>=5)reportWin(player);
-}else{
-rect.setAttribute('fill','#ff6b6b');
-setTimeout(()=>rect.setAttribute('fill','#0f1830'),400);
-}
-}
-
-// ===== INPUT HANDLING (CLICK-AND-SELECT ONLY) =====
-function handleCellClick(player,r,c){
-if(gameState.phase!=='input')return;
-if(player!==localPlayer)return;
-const mode=getCurrentMode();
-if(mode==='memory_race'){
-const input=player===1?gameState.p1.input:gameState.p2.input;
-input.push({r,c});
-highlightPlayerCell(player,r,c,'#64d8ff',300);
-checkMemoryInput(player);
-}
-if(mode==='math_blitz'){
-const selected=player===1?gameState.p1.selected:gameState.p2.selected;
-const idx=r*gameState.gridSize+c;
-if(!selected.includes(idx)){selected.push(idx);document.getElementById(`${player===1?'p1':'p2'}-cell-${r}-${c}`).setAttribute('fill','#64d8ff');}
-else{selected.splice(selected.indexOf(idx),1);document.getElementById(`${player===1?'p1':'p2'}-cell-${r}-${c}`).setAttribute('fill','#0f1830');}
-checkMathSum(player);
-}
-if(mode==='color_war')cycleColor(player,r,c);
-if(mode==='sequence_battle'){
-const selected=player===1?gameState.p1.selected:gameState.p2.selected;
-const idx=r*gameState.gridSize+c;
-if(!selected.includes(idx)){selected.push(idx);document.getElementById(`${player===1?'p1':'p2'}-cell-${r}-${c}`).setAttribute('fill','#64d8ff');}
-else{selected.splice(selected.indexOf(idx),1);document.getElementById(`${player===1?'p1':'p2'}-cell-${r}-${c}`).setAttribute('fill','#0f1830');}
-checkSequence(player);
-}
-if(mode==='spatial_clash')toggleSpatialCell(player,r,c);
-if(mode==='word_sprint'){
-const input=player===1?gameState.p1:gameState.p2;
-const idx=r*5+c;
-const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-updateWordInput(player,letters[idx]);
-}
-if(mode==='logic_faceoff')checkLogicGuess(player);
-}
-
-// ===== KEYBOARD SUPPORT (Optional) =====
-document.addEventListener('keydown',function(e){
-if(gameState.phase!=='input'&&!(gameState.phase==='playing'&&getCurrentMode()==='reaction_duel'))return;
-const key=e.key.toLowerCase();
-const size=gameState.gridSize;
-
-// P1: WASD keys
-if(key==='w'&&gameState.p1.cursor.r>0){gameState.p1.cursor.r--;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
-if(key==='s'&&gameState.p1.cursor.r<size-1){gameState.p1.cursor.r++;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
-if(key==='a'&&gameState.p1.cursor.c>0){gameState.p1.cursor.c--;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
-if(key==='d'&&gameState.p1.cursor.c<size-1){gameState.p1.cursor.c++;setCursor(1,gameState.p1.cursor.r,gameState.p1.cursor.c,size);}
-
-// P2: Arrow keys
-if(e.key==='ArrowUp'&&gameState.p2.cursor.r>0){gameState.p2.cursor.r--;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
-if(e.key==='ArrowDown'&&gameState.p2.cursor.r<size-1){gameState.p2.cursor.r++;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
-if(e.key==='ArrowLeft'&&gameState.p2.cursor.c>0){gameState.p2.cursor.c--;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
-if(e.key==='ArrowRight'&&gameState.p2.cursor.c<size-1){gameState.p2.cursor.c++;setCursor(2,gameState.p2.cursor.r,gameState.p2.cursor.c,size);}
-
-// Confirm
-if(key==='q')handleCellClick(1,gameState.p1.cursor.r,gameState.p1.cursor.c);
-if(key==='u')handleCellClick(2,gameState.p2.cursor.r,gameState.p2.cursor.c);
-
-// Reaction
-if(key==='e'&&getCurrentMode()==='reaction_duel')handleReaction(1);
-if(key==='o'&&getCurrentMode()==='reaction_duel')handleReaction(2);
-});
 </script>
-
-<!-- MUSIC PLAYER: Stray Kids - Run It (auto-plays on page load) -->
-<div id="music-player" style="position:fixed;bottom:10px;right:10px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
-<iframe id="yt-player" width="1" height="1" src="https://www.youtube.com/embed/Q7IFjVUUb_E?autoplay=1&mute=0&loop=1&playlist=Q7IFjVUUb_E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-</div>
-
 </body>
-</html>''')
-    f.flush()
-
-# Verify the file is complete and valid
-with open('/mnt/agents/output/neural_duel.html', 'r') as f:
-    content = f.read()
-
-# Check key parts
-print(f"Total file size: {len(content)} chars")
-print(f"Contains </html>: {content.strip().endswith('</html>')}")
-print(f"Contains </body>: {'</body>' in content}")
-print(f"Contains </script>: {'</script>' in content}")
-print(f"Contains iframe: {'iframe' in content}")
-print(f"Contains Run It: {'Run It' in content}")
-print(f"Contains joystick: {'joystick' in content.lower()}")
-print(f"Contains dpad: {'dpad' in content.lower()}")
-print(f"Contains touch-controls: {'touch-controls' in content}")
-print(f"Contains handleTouch: {'handleTouch' in content}")
-print(f"Contains handleCellClick: {'handleCellClick' in content}")
-print(f"Contains ontouchstart: {'ontouchstart' in content}")
-print(f"Contains onmousedown: {'onmousedown' in content}")
-
-# Check for any unclosed tags or issues
-import re
-html_tags = re.findall(r'<(/?)(\w+)[^>]*>', content)
-open_tags = []
-for closing, tag in html_tags:
-    if tag in ['br', 'hr', 'img', 'input', 'meta', 'link', 'base', 'area', 'col', 'embed', 'param', 'source', 'track', 'wbr']:
-        continue
-    if not closing:
-        open_tags.append(tag)
-    else:
-        if open_tags and open_tags[-1] == tag:
-            open_tags.pop()
-        else:
-            print(f"Mismatched tag: </{tag}> (expected </{open_tags[-1] if open_tags else 'none'}>)")
-
-if open_tags:
-    print(f"Unclosed tags: {open_tags}")
-else:
-    print("All tags properly closed!")
-
-# The regex check is confused by SVG self-closing elements and template literals. 
-# Let me do a simpler check - just verify the HTML structure is valid by parsing it
-
-# Check that key changes are present
-with open('/mnt/agents/output/neural_duel.html', 'r') as f:
-    content = f.read()
-
-# Verify the important changes:
-checks = {
-    "No joystick/dpad SVG elements": "touch-controls" not in content,
-    "No handleTouch function": "handleTouch" not in content,
-    "No ontouchstart handlers": "ontouchstart" not in content,
-    "No onmousedown handlers": "onmousedown" not in content,
-    "handleCellClick exists": "handleCellClick" in content,
-    "Click event listeners on cells": "addEventListener('click'" in content,
-    "Stray Kids Run It music": "Q7IFjVUUb_E" in content,
-    "Auto-play enabled": "autoplay=1" in content,
-    "Music label on title screen": "Now Playing: Stray Kids" in content,
-    "How to play updated for tap": "Tap cells" in content,
-    "No D-pad in how-to-play": "D-PAD" not in content,
-    "Reaction duel uses click": "addEventListener('click',()=>handleReaction" in content,
-    "Math blitz supports deselect": "splice(selected.indexOf(idx),1)" in content,
-    "Valid HTML ending": content.strip().endswith("</html>"),
-    "Valid body ending": "</body>" in content,
-    "Valid SVG ending": "</svg>" in content,
-}
-
-all_pass = True
-for check, result in checks.items():
-    status = "✅" if result else "❌"
-    print(f"{status} {check}")
-    if not result:
-        all_pass = False
-
-print(f"\n{'All checks passed!' if all_pass else 'Some checks failed!'}")
-print(f"\nFile size: {len(content):,} characters")
-
+</html>
