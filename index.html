@@ -229,6 +229,7 @@ let db = null, roomRef = null, roomCode = '', playerRole = null, localPlayer = 1
 let opponentConnected = false, roomUnsubscribe = null;
 let currentRoundLaunched = -1;
 let countdownInterval = null;
+let currentPuzzle = null;
 
 const gameArea = document.getElementById('game-area');
 const svg = document.getElementById('game-canvas');
@@ -264,22 +265,84 @@ early: false,
 startAt: 0
 };
 
+// ===== SEEDED RNG (synchronizes puzzles across devices) =====
+function createSeededRNG(seed){
+return function(){
+seed = (seed * 9301 + 49297) % 233280;
+return seed / 233280;
+};
+}
+
+function generatePuzzle(mode, round){
+let seed = 0;
+for(let i = 0; i < roomCode.length; i++){
+seed = ((seed << 5) - seed) + roomCode.charCodeAt(i);
+seed |= 0;
+}
+seed = Math.abs(seed) + round * 997 + mode.length * 31;
+const rng = createSeededRNG(seed);
+
+switch(mode){
+case 'memory_race': {
+const size = 4;
+const length = 4 + Math.floor(round / 2);
+const pattern = [];
+const used = new Set();
+while(pattern.length < length){
+const r = Math.floor(rng() * size);
+const c = Math.floor(rng() * size);
+const key = `${r}-${c}`;
+if(!used.has(key)){
+used.add(key);
+pattern.push({r, c});
+}
+}
+return {mode, size, length, pattern};
+}
+case 'math_blitz': {
+const size = 4;
+const target = 15 + Math.floor(rng() * 26);
+const nums = [];
+for(let i = 0; i < 16; i++) nums.push(1 + Math.floor(rng() * 12));
+const c1 = Math.floor(rng() * 16);
+const c2 = Math.floor(rng() * 16);
+nums[c1] = 1 + Math.floor(rng() * (target - 1));
+nums[c2] = target - nums[c1];
+return {mode, size, target, nums};
+}
+case 'color_war': {
+const size = 5;
+const colors = ['#ff6b6b','#64d8ff','#ffe66d','#4ecdc4','#ff8b94','#c7ceea'];
+const grid = [];
+for(let r = 0; r < size; r++){
+grid[r] = [];
+for(let c = 0; c < size; c++) grid[r][c] = Math.floor(rng() * colors.length);
+}
+return {mode, size, colors, grid};
+}
+case 'reaction_duel': {
+const waitTime = 2000 + Math.floor(rng() * 3001);
+return {mode, waitTime};
+}
+case 'mixed_mayhem': {
+const subModes = ['memory_race','math_blitz','color_war','reaction_duel'];
+const subMode = subModes[Math.floor(rng() * subModes.length)];
+return {...generatePuzzle(subMode, round), subMode};
+}
+default: return {};
+}
+}
+
 // ===== UTILS =====
-function randInt(min, max) {
+function randInt(min, max){
 return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function shuffle(arr) {
-const a = [...arr];
-for (let i = a.length - 1; i > 0; i--) {
-const j = Math.floor(Math.random() * (i + 1));
-[a[i], a[j]] = [a[j], a[i]];
-}
-return a;
-}
-
 function resetGame(){
-if(countdownInterval) clearInterval(countdownInterval);
+if(countdownInterval){
+clearInterval(countdownInterval);
+countdownInterval = null;
+}
 if(gameState.reactionTimer) clearTimeout(gameState.reactionTimer);
 if(gameState.reactionFallback) clearTimeout(gameState.reactionFallback);
 gameState = {
@@ -305,6 +368,7 @@ early: false,
 startAt: 0
 };
 currentRoundLaunched = -1;
+currentPuzzle = null;
 clearGameArea();
 }
 
@@ -404,6 +468,7 @@ window.firebaseUpdate(roomRef, { status: 'mode_select' });
 showScreen('mode-select');
 }
 if(data.status === 'playing' && data.gameState){
+if(data.puzzle) currentPuzzle = data.puzzle;
 syncGameState(data.gameState);
 }
 if(data.status === 'round_end'){
@@ -443,7 +508,10 @@ roomUnsubscribe = window.firebaseOnValue(roomRef, (snap) => {
 const d = snap.val();
 if(!d){ showScreen('disconnected'); return; }
 if(d.status === 'mode_select') showScreen('guest-waiting');
-if(d.status === 'playing' && d.gameState) syncGameState(d.gameState);
+if(d.status === 'playing'){
+if(d.puzzle) currentPuzzle = d.puzzle;
+if(d.gameState) syncGameState(d.gameState);
+}
 if(d.status === 'round_end') handleRoundResult(d);
 if(d.status === 'match_end') showMatchOver(d);
 if(!d.host) showScreen('disconnected');
@@ -481,6 +549,7 @@ gameState.mode = mode;
 gameState.round = 1;
 gameState.myScore = 0;
 gameState.oppScore = 0;
+currentPuzzle = generatePuzzle(mode, 1);
 const startAt = Date.now() + 3000;
 window.firebaseUpdate(roomRef, {
 status: 'playing',
@@ -491,7 +560,8 @@ phase: 'countdown',
 p1Score: 0,
 p2Score: 0,
 startAt: startAt
-}
+},
+puzzle: currentPuzzle
 });
 };
 
@@ -505,13 +575,15 @@ gameState.oppScore = localPlayer === 1 ? remoteState.p2Score : remoteState.p1Sco
 document.getElementById('hud-score').textContent = `Score: ${gameState.myScore}`;
 }
 
-if(gameState.phase === 'countdown' && prevPhase !== 'countdown'){
+if(gameState.phase === 'countdown'){
+if(prevPhase !== 'countdown'){
 showGameplay();
 document.getElementById('hud-name').textContent = localPlayer === 1 ? 'YOU (P1)' : 'YOU (P2)';
 document.getElementById('round-info').textContent = `ROUND ${gameState.round} / ${gameState.maxRounds}`;
 const modeInfo = MODES.find(m => m.id === gameState.mode);
 document.getElementById('mode-display').textContent = `MODE: ${modeInfo ? modeInfo.name : gameState.mode.toUpperCase()}`;
 startCountdown();
+}
 }
 
 if(gameState.phase === 'playing' && gameState.round !== currentRoundLaunched){
@@ -533,17 +605,46 @@ cdEl.textContent = 'GO!';
 cdEl.setAttribute('fill','#4ecdc4');
 } else {
 clearInterval(countdownInterval);
+countdownInterval = null;
 cdEl.textContent = '';
 cdEl.setAttribute('fill','#ff6b6b');
-if(playerRole === 'host'){
-window.firebaseUpdate(roomRef, { 'gameState/phase': 'playing' });
-}
 gameState.phase = 'playing';
 if(gameState.round !== currentRoundLaunched){
 currentRoundLaunched = gameState.round;
 launchMode(gameState.mode);
 }
+if(playerRole === 'host'){
+window.firebaseUpdate(roomRef, { 'gameState/phase': 'playing' });
 }
+}
+}, 800);
+}
+
+function showLocalWin(){
+const flash = document.createElementNS('http://www.w3.org/2000/svg','rect');
+flash.setAttribute('x','0');
+flash.setAttribute('y','0');
+flash.setAttribute('width','600');
+flash.setAttribute('height','800');
+flash.setAttribute('fill','#4ecdc4');
+flash.setAttribute('opacity','0.3');
+flash.style.pointerEvents = 'none';
+gameArea.appendChild(flash);
+
+const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+txt.setAttribute('x','300');
+txt.setAttribute('y','400');
+txt.setAttribute('text-anchor','middle');
+txt.setAttribute('fill','#fff');
+txt.setAttribute('font-size','48');
+txt.setAttribute('font-weight','bold');
+txt.setAttribute('pointer-events','none');
+txt.textContent = 'CORRECT!';
+gameArea.appendChild(txt);
+
+setTimeout(() => {
+if(flash.parentNode) flash.remove();
+if(txt.parentNode) txt.remove();
 }, 800);
 }
 
@@ -551,6 +652,7 @@ function reportWin(reactionTime){
 if(gameState.phase === 'done') return;
 gameState.phase = 'done';
 gameState.myScore++;
+showLocalWin();
 
 const p1Score = localPlayer === 1 ? gameState.myScore : gameState.oppScore;
 const p2Score = localPlayer === 2 ? gameState.myScore : gameState.oppScore;
@@ -567,6 +669,7 @@ window.firebaseUpdate(roomRef, { status: 'round_end', result: result });
 function handleRoundResult(data){
 if(!data || !data.result) return;
 const result = data.result;
+gameState.phase = 'done';
 
 gameState.myScore = localPlayer === 1 ? result.p1Score : result.p2Score;
 gameState.oppScore = localPlayer === 1 ? result.p2Score : result.p1Score;
@@ -612,6 +715,7 @@ p2Score: gameState.oppScore
 });
 showMatchOver({ result: { p1Score: gameState.myScore, p2Score: gameState.oppScore } });
 } else {
+currentPuzzle = generatePuzzle(gameState.mode, gameState.round);
 const startAt = Date.now() + 3000;
 gameState.phase = 'countdown';
 gameState.userInput = [];
@@ -627,7 +731,8 @@ phase: 'countdown',
 p1Score: gameState.myScore,
 p2Score: gameState.oppScore,
 startAt: startAt
-}
+},
+puzzle: currentPuzzle
 });
 }
 };
@@ -654,31 +759,22 @@ document.getElementById('final-stats').textContent = `Final Score — P1: ${p1Sc
 // ===== GAME MODES =====
 function launchMode(mode){
 clearGameArea();
-switch(mode){
+const actualMode = (mode === 'mixed_mayhem' && currentPuzzle && currentPuzzle.subMode) ? currentPuzzle.subMode : mode;
+switch(actualMode){
 case 'memory_race': startMemoryRace(); break;
 case 'math_blitz': startMathBlitz(); break;
 case 'color_war': startColorWar(); break;
 case 'reaction_duel': startReactionDuel(); break;
-case 'mixed_mayhem': startMathBlitz(); break;
+default: startMathBlitz();
 }
 }
 
 // ===== MEMORY RACE =====
 function startMemoryRace(){
-const size = 4;
-const length = 4 + Math.floor(gameState.round / 2);
-gameState.pattern = [];
+const p = currentPuzzle;
+if(!p || !p.pattern) return;
+gameState.pattern = p.pattern;
 gameState.userInput = [];
-const used = new Set();
-while(gameState.pattern.length < length){
-const r = randInt(0, size - 1);
-const c = randInt(0, size - 1);
-const key = `${r}-${c}`;
-if(!used.has(key)){
-used.add(key);
-gameState.pattern.push({ r, c });
-}
-}
 
 const centerText = document.createElementNS('http://www.w3.org/2000/svg','text');
 centerText.setAttribute('x','300');
@@ -690,13 +786,13 @@ centerText.textContent = 'WATCH THE PATTERN...';
 centerText.setAttribute('id','memory-instruction');
 gameArea.appendChild(centerText);
 
-createPlayerGrid(size, 180);
+createPlayerGrid(p.size, 180);
 
 let idx = 0;
 const showNext = () => {
 if(idx < gameState.pattern.length){
-const p = gameState.pattern[idx];
-highlightCell(p.r, p.c, '#ffe66d', 500);
+const cell = gameState.pattern[idx];
+highlightCell(cell.r, cell.c, '#ffe66d', 500);
 idx++;
 setTimeout(showNext, 700);
 } else {
@@ -710,16 +806,11 @@ setTimeout(showNext, 800);
 
 // ===== MATH BLITZ =====
 function startMathBlitz(){
-const size = 4;
-gameState.gridSize = size;
-const target = randInt(15, 40);
-gameState.target = target;
-const nums = [];
-for(let i = 0; i < 16; i++) nums.push(randInt(1, 12));
-const combo = [randInt(0, 15), randInt(0, 15)];
-nums[combo[0]] = randInt(1, target - 1);
-nums[combo[1]] = target - nums[combo[0]];
-gameState.gridNumbers = nums;
+const p = currentPuzzle;
+if(!p || !p.nums) return;
+gameState.gridSize = p.size;
+gameState.target = p.target;
+gameState.gridNumbers = p.nums;
 gameState.selected = [];
 
 const centerText = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -729,26 +820,24 @@ centerText.setAttribute('text-anchor','middle');
 centerText.setAttribute('fill','#ffaa44');
 centerText.setAttribute('font-size','32');
 centerText.setAttribute('font-weight','bold');
-centerText.textContent = `TARGET: ${target}`;
+centerText.textContent = `TARGET: ${p.target}`;
 gameArea.appendChild(centerText);
 
-createPlayerGrid(size, 180, nums);
+createPlayerGrid(p.size, 180, p.nums);
 gameState.phase = 'input';
 }
 
 // ===== COLOR WAR =====
 function startColorWar(){
-const size = 5;
-const colors = ['#ff6b6b','#64d8ff','#ffe66d','#4ecdc4','#ff8b94','#c7ceea'];
-gameState.colorGrid = [];
+const p = currentPuzzle;
+if(!p || !p.grid) return;
+const size = p.size;
+const colors = p.colors;
+gameState.colorGrid = p.grid;
 gameState.playerColorGrid = [];
 for(let r = 0; r < size; r++){
-gameState.colorGrid[r] = [];
 gameState.playerColorGrid[r] = [];
-for(let c = 0; c < size; c++){
-gameState.colorGrid[r][c] = randInt(0, colors.length - 1);
-gameState.playerColorGrid[r][c] = -1;
-}
+for(let c = 0; c < size; c++) gameState.playerColorGrid[r][c] = -1;
 }
 
 const centerText = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -778,6 +867,8 @@ if(rect) rect.setAttribute('fill','#0f1830');
 
 // ===== REACTION DUEL =====
 function startReactionDuel(){
+const p = currentPuzzle;
+if(!p) return;
 gameState.reactionState = 'wait';
 gameState.early = false;
 
@@ -804,7 +895,7 @@ label.setAttribute('id','react-label');
 label.textContent = 'WAIT FOR GREEN...';
 gameArea.appendChild(label);
 
-const waitTime = randInt(2000, 5000);
+const waitTime = p.waitTime;
 gameState.reactionTimer = setTimeout(() => {
 if(gameState.reactionState !== 'wait') return;
 gameState.reactionState = 'go';
