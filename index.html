@@ -24,6 +24,10 @@ body{background:#050814;min-height:100vh;display:flex;justify-content:center;ali
 #music-player button{background:#1e3a5f;border:1px solid #64d8ff;color:#64d8ff;padding:6px 10px;margin:5px 2px 0 0;border-radius:6px;cursor:pointer;font-size:11px;font-weight:bold}
 #music-player button:hover{background:#3a5a7f;filter:brightness(1.2)}
 #song-title{color:#64d8ff;font-weight:bold;margin-bottom:5px;font-size:11px}
+@media (max-width: 600px){
+  #game-canvas{border-radius:0;box-shadow:none}
+  #music-player{left:10px;right:10px;bottom:10px;max-width:none}
+}
 </style>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -62,15 +66,16 @@ window.firebaseOnDisconnect = onDisconnect;
 
 <!-- TITLE SCREEN -->
 <g id="title-screen">
-<text x="300" y="150" text-anchor="middle" fill="#64d8ff" font-size="48" font-weight="bold" filter="url(#strong-glow)" class="float">NEURAL</text>
-<text x="300" y="210" text-anchor="middle" fill="#ff6b6b" font-size="48" font-weight="bold" filter="url(#strong-glow)" class="float">DUEL</text>
-<text x="300" y="280" text-anchor="middle" fill="#8899aa" font-size="16" letter-spacing="3">TAP TO PLAY</text>
+<text x="300" y="140" text-anchor="middle" fill="#64d8ff" font-size="48" font-weight="bold" filter="url(#strong-glow)" class="float">NEURAL</text>
+<text x="300" y="200" text-anchor="middle" fill="#ff6b6b" font-size="48" font-weight="bold" filter="url(#strong-glow)" class="float">DUEL</text>
+<text x="300" y="255" text-anchor="middle" fill="#4ecdc4" font-size="14" letter-spacing="2">ONLINE 1v1 • EACH PLAYER ON THEIR OWN DEVICE</text>
+<text x="300" y="290" text-anchor="middle" fill="#8899aa" font-size="16" letter-spacing="3">TAP TO PLAY</text>
 
 <g class="btn" onclick="generateRoomCode()"><rect x="150" y="340" width="300" height="60" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="300" y="380" text-anchor="middle" fill="#64d8ff" font-size="18" font-weight="bold">CREATE ROOM</text></g>
 <g class="btn" onclick="joinRoomPrompt()"><rect x="150" y="420" width="300" height="60" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="300" y="460" text-anchor="middle" fill="#ff6b6b" font-size="18" font-weight="bold">JOIN ROOM</text></g>
 <g class="btn" onclick="showHowToPlay()"><rect x="150" y="500" width="300" height="50" rx="10" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="300" y="535" text-anchor="middle" fill="#ffe66d" font-size="16">📖 HOW TO PLAY</text></g>
 
-<text x="300" y="610" text-anchor="middle" fill="#556677" font-size="12">Share room code with friend</text>
+<text x="300" y="610" text-anchor="middle" fill="#556677" font-size="12">Share room code with a friend</text>
 <text x="300" y="650" text-anchor="middle" fill="#4ecdc4" font-size="11" id="now-playing">🎵 Loading...</text>
 <text x="300" y="720" text-anchor="middle" fill="#ffaa44" font-size="12" id="connection-status">Initializing...</text>
 </g>
@@ -78,14 +83,17 @@ window.firebaseOnDisconnect = onDisconnect;
 <!-- WAITING SCREEN -->
 <g id="waiting-screen" display="none">
 <rect width="600" height="800" fill="#050814" opacity="0.95" rx="16"/>
-<text x="300" y="250" text-anchor="middle" fill="#64d8ff" font-size="32" font-weight="bold">ROOM CODE</text>
-<rect x="100" y="280" width="400" height="80" rx="10" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/>
-<text x="300" y="340" text-anchor="middle" fill="#64d8ff" font-size="48" font-weight="bold" id="waiting-code-display">----</text>
+<text x="300" y="220" text-anchor="middle" fill="#64d8ff" font-size="28" font-weight="bold">YOUR ROOM CODE</text>
+<rect x="100" y="250" width="400" height="80" rx="10" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/>
+<text x="300" y="310" text-anchor="middle" fill="#64d8ff" font-size="48" font-weight="bold" id="waiting-code-display">----</text>
 
-<text x="300" y="420" text-anchor="middle" fill="#8899aa" font-size="16">Share this code with friend</text>
-<text x="300" y="450" text-anchor="middle" fill="#8899aa" font-size="14">Waiting for opponent...</text>
+<g class="btn" onclick="copyRoomCode()"><rect x="200" y="350" width="200" height="40" rx="8" fill="#0f1830" stroke="#4ecdc4" stroke-width="1.5"/><text x="300" y="378" text-anchor="middle" fill="#4ecdc4" font-size="14" font-weight="bold" id="copy-btn-text">COPY CODE</text></g>
 
-<g class="btn pulse" onclick="cancelRoom()"><rect x="150" y="520" width="300" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="300" y="555" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">CANCEL</text></g>
+<text x="300" y="450" text-anchor="middle" fill="#8899aa" font-size="16">Share this code with your friend</text>
+<text x="300" y="480" text-anchor="middle" fill="#556677" font-size="14">Waiting for opponent to join...</text>
+
+<g class="btn pulse" onclick="cancelRoom()"><rect x="150" y="540" width="300" height="50" rx="10" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="300" y="575" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">CANCEL</text></g>
+<text x="300" y="750" text-anchor="middle" fill="#334455" font-size="11">This is YOUR screen. Your friend opens theirs.</text>
 </g>
 
 <!-- MODE SELECT -->
@@ -96,15 +104,15 @@ window.firebaseOnDisconnect = onDisconnect;
 <g class="btn" onclick="hostSelectMode('color_war')"><rect x="50" y="250" width="500" height="60" rx="10" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="300" y="285" text-anchor="middle" fill="#ffe66d" font-weight="bold">🎨 COLOR WAR</text></g>
 <g class="btn" onclick="hostSelectMode('reaction_duel')"><rect x="50" y="330" width="500" height="60" rx="10" fill="#0f1830" stroke="#4ecdc4" stroke-width="2"/><text x="300" y="365" text-anchor="middle" fill="#4ecdc4" font-weight="bold">⚡ REACTION DUEL</text></g>
 <g class="btn" onclick="hostSelectMode('mixed_mayhem')"><rect x="50" y="410" width="500" height="60" rx="10" fill="#1a0a30" stroke="#ff44ff" stroke-width="3"/><text x="300" y="445" text-anchor="middle" fill="#ff44ff" font-weight="bold">🎲 MIXED MAYHEM</text></g>
-<text x="300" y="530" text-anchor="middle" fill="#445566" font-size="11">You are the HOST</text>
+<text x="300" y="530" text-anchor="middle" fill="#445566" font-size="11">You are the HOST — this is your screen</text>
 </g>
 
 <!-- GUEST WAITING -->
 <g id="guest-waiting" display="none">
 <rect width="600" height="800" fill="#050814" opacity="0.95" rx="16"/>
-<text x="300" y="320" text-anchor="middle" fill="#ff6b6b" font-size="28" font-weight="bold">WAITING FOR HOST</text>
-<text x="300" y="370" text-anchor="middle" fill="#8899aa" font-size="14">Host is selecting the mode...</text>
-<text x="300" y="750" text-anchor="middle" fill="#445566" font-size="11">You are GUEST (Player 2)</text>
+<text x="300" y="300" text-anchor="middle" fill="#ff6b6b" font-size="28" font-weight="bold">WAITING FOR HOST</text>
+<text x="300" y="350" text-anchor="middle" fill="#8899aa" font-size="14">Host is selecting the game mode...</text>
+<text x="300" y="750" text-anchor="middle" fill="#445566" font-size="11">You are GUEST — this is your screen</text>
 </g>
 
 <!-- HUD -->
@@ -125,7 +133,8 @@ window.firebaseOnDisconnect = onDisconnect;
 <rect x="50" y="300" width="500" height="200" rx="20" fill="#0a1020" stroke="#ffe66d" stroke-width="3" opacity="0.95"/>
 <text id="winner-text" x="300" y="380" text-anchor="middle" fill="#ffe66d" font-size="36" font-weight="bold" filter="url(#strong-glow)"></text>
 <text id="winner-sub" x="300" y="420" text-anchor="middle" fill="#8899aa" font-size="14"></text>
-<g class="btn" onclick="nextRound()"><rect x="150" y="450" width="300" height="45" rx="22" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="300" y="480" text-anchor="middle" fill="#64d8ff" font-size="14" font-weight="bold">NEXT</text></g>
+<g class="btn" id="next-round-btn" onclick="nextRound()"><rect x="150" y="450" width="300" height="45" rx="22" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="300" y="480" text-anchor="middle" fill="#64d8ff" font-size="14" font-weight="bold">NEXT ROUND</text></g>
+<text id="guest-wait-text" x="300" y="480" text-anchor="middle" fill="#8899aa" font-size="14" display="none">Waiting for host...</text>
 </g>
 
 <!-- MATCH OVER -->
@@ -142,7 +151,7 @@ window.firebaseOnDisconnect = onDisconnect;
 <g id="disconnected" display="none">
 <rect width="600" height="800" fill="#050814" opacity="0.95" rx="16"/>
 <text x="300" y="300" text-anchor="middle" fill="#ff6b6b" font-size="28" font-weight="bold">OPPONENT LEFT</text>
-<text x="300" y="350" text-anchor="middle" fill="#8899aa" font-size="14">Connection lost</text>
+<text x="300" y="350" text-anchor="middle" fill="#8899aa" font-size="14">Connection lost or room closed</text>
 <g class="btn" onclick="showTitle()"><rect x="100" y="450" width="400" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="300" y="485" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">HOME</text></g>
 </g>
 
@@ -151,14 +160,14 @@ window.firebaseOnDisconnect = onDisconnect;
 <rect width="600" height="800" fill="#050814" opacity="0.98" rx="16"/>
 <text x="300" y="80" text-anchor="middle" fill="#64d8ff" font-size="28" font-weight="bold" filter="url(#strong-glow)">HOW TO PLAY</text>
 
-<text x="300" y="150" text-anchor="middle" fill="#ffe66d" font-size="16" font-weight="bold">1. TAP YOUR SCREEN</text>
-<text x="300" y="175" text-anchor="middle" fill="#8899aa" font-size="12">Tap cells on your grid to play</text>
+<text x="300" y="150" text-anchor="middle" fill="#ffe66d" font-size="16" font-weight="bold">1. ONE SCREEN PER PLAYER</text>
+<text x="300" y="175" text-anchor="middle" fill="#8899aa" font-size="12">Host creates a room. Guest joins on their own device.</text>
 
-<text x="300" y="220" text-anchor="middle" fill="#ffe66d" font-size="16" font-weight="bold">2. BEAT YOUR OPPONENT</text>
-<text x="300" y="245" text-anchor="middle" fill="#8899aa" font-size="12">Be faster and smarter to win</text>
+<text x="300" y="220" text-anchor="middle" fill="#ffe66d" font-size="16" font-weight="bold">2. RACE TO WIN</text>
+<text x="300" y="245" text-anchor="middle" fill="#8899aa" font-size="12">Each round is a head-to-head challenge. Be faster!</text>
 
-<text x="300" y="290" text-anchor="middle" fill="#ffe66d" font-size="16" font-weight="bold">3. WIN ROUNDS</text>
-<text x="300" y="315" text-anchor="middle" fill="#8899aa" font-size="12">Win 4 rounds to win the match</text>
+<text x="300" y="290" text-anchor="middle" fill="#ffe66d" font-size="16" font-weight="bold">3. WIN THE MATCH</text>
+<text x="300" y="315" text-anchor="middle" fill="#8899aa" font-size="12">First to 4 round wins takes the match (best of 7).</text>
 
 <g class="btn" onclick="hideHowToPlay()"><rect x="100" y="400" width="400" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="300" y="435" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">GOT IT ⚡</text></g>
 </g>
@@ -196,7 +205,7 @@ document.getElementById('song-title').textContent = `🎵 ${song.title}`;
 
 function playPlaylist(){
 bgMusic.src = playlist[currentSongIndex].url;
-bgMusic.play();
+bgMusic.play().catch(()=>{});
 updateSongDisplay();
 }
 
@@ -218,6 +227,7 @@ playPlaylist();
 // ===== GAME STATE =====
 let db = null, roomRef = null, roomCode = '', playerRole = null, localPlayer = 1;
 let opponentConnected = false, roomUnsubscribe = null;
+let currentRoundLaunched = -1;
 
 const gameArea = document.getElementById('game-area');
 const svg = document.getElementById('game-canvas');
@@ -239,7 +249,18 @@ oppScore: 0,
 phase: 'idle',
 pattern: [],
 target: 0,
-gridSize: 4
+gridSize: 4,
+userInput: [],
+selected: [],
+colorGrid: [],
+playerColorGrid: [],
+gridNumbers: [],
+reactionState: 'idle',
+reactionStartTime: 0,
+reactionTimer: null,
+reactionFallback: null,
+early: false,
+startAt: 0
 };
 
 // ===== UTILS =====
@@ -256,10 +277,33 @@ const j = Math.floor(Math.random() * (i + 1));
 return a;
 }
 
-function isPrime(n) {
-if (n < 2) return false;
-for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
-return true;
+function resetGame(){
+if(gameState.reactionTimer) clearTimeout(gameState.reactionTimer);
+if(gameState.reactionFallback) clearTimeout(gameState.reactionFallback);
+gameState = {
+mode: null,
+round: 1,
+maxRounds: 7,
+myScore: 0,
+oppScore: 0,
+phase: 'idle',
+pattern: [],
+target: 0,
+gridSize: 4,
+userInput: [],
+selected: [],
+colorGrid: [],
+playerColorGrid: [],
+gridNumbers: [],
+reactionState: 'idle',
+reactionStartTime: 0,
+reactionTimer: null,
+reactionFallback: null,
+early: false,
+startAt: 0
+};
+currentRoundLaunched = -1;
+gameArea.innerHTML = '';
 }
 
 // ===== SCREEN MANAGEMENT =====
@@ -281,19 +325,38 @@ showScreen('title-screen');
 localStorage.setItem('neural_duel_seen_tutorial', 'true');
 };
 
+window.copyRoomCode = function(){
+if(!roomCode) return;
+navigator.clipboard.writeText(roomCode).then(()=>{
+document.getElementById('copy-btn-text').textContent = 'COPIED!';
+setTimeout(()=>document.getElementById('copy-btn-text').textContent='COPY CODE', 1500);
+}).catch(()=>{
+const ta = document.createElement('textarea');
+ta.value = roomCode;
+document.body.appendChild(ta);
+ta.select();
+document.execCommand('copy');
+document.body.removeChild(ta);
+document.getElementById('copy-btn-text').textContent = 'COPIED!';
+setTimeout(()=>document.getElementById('copy-btn-text').textContent='COPY CODE', 1500);
+});
+};
+
 // ===== FIREBASE =====
 function checkFirebase() {
 if (typeof window.firebaseDB !== 'undefined' && window.firebaseDB !== null) {
 db = window.firebaseDB;
-document.getElementById('connection-status').textContent = '✅ Firebase ready';
+document.getElementById('connection-status').textContent = '✅ Online — Ready';
 document.getElementById('connection-status').setAttribute('fill', '#4ecdc4');
 return true;
 }
+document.getElementById('connection-status').textContent = '❌ Firebase loading...';
 return false;
 }
 
 window.generateRoomCode = function() {
-if (!checkFirebase()) { alert('Firebase not ready!'); return; }
+if (!checkFirebase()) { alert('Firebase not ready! Please wait a moment.'); return; }
+resetGame();
 roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 playerRole = 'host';
 localPlayer = 1;
@@ -304,16 +367,16 @@ host: true,
 guest: false,
 status: 'waiting',
 gameState: null,
-p1Wins: 0,
-p2Wins: 0
+p1Score: 0,
+p2Score: 0
 });
 window.firebaseOnDisconnect(roomRef).remove();
 showScreen('waiting-screen');
 document.getElementById('waiting-code-display').textContent = roomCode;
 roomUnsubscribe = window.firebaseOnValue(roomRef, (snapshot) => {
 const data = snapshot.val();
-if (!data) return;
-if (data.guest) {
+if (!data) { showScreen('disconnected'); return; }
+if (data.guest === true && data.status === 'waiting') {
 opponentConnected = true;
 window.firebaseUpdate(roomRef, { status: 'mode_select' });
 showScreen('mode-select');
@@ -327,20 +390,21 @@ handleRoundResult(data);
 if (data.status === 'match_end') {
 showMatchOver(data);
 }
-if (!data.host && playerRole === 'guest') {
+if (data.guest === false && opponentConnected && data.status !== 'match_end') {
 showScreen('disconnected');
 }
 });
 };
 
 window.joinRoomPrompt = function() {
-if (!checkFirebase()) { alert('Firebase not ready!'); return; }
+if (!checkFirebase()) { alert('Firebase not ready! Please wait a moment.'); return; }
 const code = prompt('Enter room code:');
 if (!code) return;
 joinRoom(code.toUpperCase().trim());
 };
 
 function joinRoom(code) {
+resetGame();
 roomCode = code;
 playerRole = 'guest';
 localPlayer = 2;
@@ -348,11 +412,14 @@ roomRef = window.firebaseRef(db, 'rooms/' + roomCode);
 window.firebaseOnValue(roomRef, (snapshot) => {
 const data = snapshot.val();
 if (!data) { alert('Room not found!'); return; }
-if (data.guest) { alert('Room is full!'); return; }
+if (data.guest === true) { alert('Room is full!'); return; }
 window.firebaseUpdate(roomRef, { guest: true, status: 'waiting' });
+const guestDisconnectRef = window.firebaseRef(db, 'rooms/' + roomCode + '/guest');
+window.firebaseOnDisconnect(guestDisconnectRef).set(false);
+
 roomUnsubscribe = window.firebaseOnValue(roomRef, (snap) => {
 const d = snap.val();
-if (!d) return;
+if (!d) { showScreen('disconnected'); return; }
 if (d.status === 'mode_select') showScreen('guest-waiting');
 if (d.status === 'playing' && d.gameState) syncGameState(d.gameState);
 if (d.status === 'round_end') handleRoundResult(d);
@@ -363,15 +430,26 @@ if (!d.host) showScreen('disconnected');
 }
 
 window.cancelRoom = function() {
+if (roomUnsubscribe) roomUnsubscribe();
 if (roomRef) window.firebaseRemove(roomRef);
+resetGame();
 showScreen('title-screen');
 };
 
 window.showTitle = function() {
+if (roomUnsubscribe) roomUnsubscribe();
+if (roomRef && playerRole === 'host') window.firebaseRemove(roomRef);
+if (roomRef && playerRole === 'guest') window.firebaseUpdate(roomRef, { guest: false });
+resetGame();
+roomRef = null;
+playerRole = null;
+roomUnsubscribe = null;
+opponentConnected = false;
 showScreen('title-screen');
 };
 
 window.showModeSelect = function() {
+if (playerRole !== 'host') return;
 showScreen('mode-select');
 };
 
@@ -381,23 +459,43 @@ gameState.mode = mode;
 gameState.round = 1;
 gameState.myScore = 0;
 gameState.oppScore = 0;
+const startAt = Date.now() + 2000;
 window.firebaseUpdate(roomRef, {
 status: 'playing',
-gameState: { ...gameState, phase: 'countdown', mode: mode }
+gameState: {
+mode: mode,
+round: 1,
+phase: 'countdown',
+p1Score: 0,
+p2Score: 0,
+startAt: startAt
+}
 });
 };
 
 function syncGameState(remoteState) {
+const prevPhase = gameState.phase;
 gameState = { ...gameState, ...remoteState };
-if (gameState.phase === 'countdown') {
+
+if (remoteState.p1Score !== undefined && remoteState.p2Score !== undefined) {
+gameState.myScore = localPlayer === 1 ? remoteState.p1Score : remoteState.p2Score;
+gameState.oppScore = localPlayer === 1 ? remoteState.p2Score : remoteState.p1Score;
+document.getElementById('hud-score').textContent = `Score: ${gameState.myScore}`;
+}
+
+if (gameState.phase === 'countdown' && prevPhase !== 'countdown') {
 showScreen('hud');
 document.getElementById('hud-name').textContent = localPlayer === 1 ? 'YOU (P1)' : 'YOU (P2)';
 document.getElementById('round-info').textContent = `ROUND ${gameState.round} / ${gameState.maxRounds}`;
 const modeInfo = MODES.find(m => m.id === gameState.mode);
 document.getElementById('mode-display').textContent = `MODE: ${modeInfo ? modeInfo.name : gameState.mode.toUpperCase()}`;
-startCountdown();
+
+const now = Date.now();
+const delay = gameState.startAt ? Math.max(0, gameState.startAt - now) : 0;
+setTimeout(() => startCountdown(), delay);
 }
-if (gameState.phase === 'playing') {
+if (gameState.phase === 'playing' && gameState.round !== currentRoundLaunched) {
+currentRoundLaunched = gameState.round;
 launchMode(gameState.mode);
 }
 }
@@ -408,8 +506,9 @@ const cdEl = document.getElementById('countdown');
 cdEl.textContent = count;
 const interval = setInterval(() => {
 count--;
-if (count > 0) cdEl.textContent = count;
-else if (count === 0) {
+if (count > 0) {
+cdEl.textContent = count;
+} else if (count === 0) {
 cdEl.textContent = 'GO!';
 cdEl.setAttribute('fill', '#4ecdc4');
 } else {
@@ -417,31 +516,44 @@ clearInterval(interval);
 cdEl.textContent = '';
 cdEl.setAttribute('fill', '#ff6b6b');
 gameState.phase = 'playing';
+if (gameState.round !== currentRoundLaunched) {
+currentRoundLaunched = gameState.round;
+launchMode(gameState.mode);
+}
 }
 }, 800);
 }
 
 function reportWin(reactionTime) {
+if (gameState.phase === 'done') return;
 gameState.phase = 'done';
 gameState.myScore++;
+
+const p1Score = localPlayer === 1 ? gameState.myScore : gameState.oppScore;
+const p2Score = localPlayer === 2 ? gameState.myScore : gameState.oppScore;
+
 const result = {
 winner: localPlayer,
 reactionTime: reactionTime || 0,
-p1Wins: localPlayer === 1 ? gameState.myScore : gameState.oppScore,
-p2Wins: localPlayer === 2 ? gameState.myScore : gameState.oppScore
+p1Score: p1Score,
+p2Score: p2Score
 };
-if (playerRole === 'host') {
 window.firebaseUpdate(roomRef, { status: 'round_end', result: result });
-} else {
-window.firebaseUpdate(roomRef, { status: 'round_end', result: result });
-}
 }
 
 function handleRoundResult(data) {
+if (!data || !data.result) return;
 const result = data.result;
+
+gameState.myScore = localPlayer === 1 ? result.p1Score : result.p2Score;
+gameState.oppScore = localPlayer === 1 ? result.p2Score : result.p1Score;
+document.getElementById('hud-score').textContent = `Score: ${gameState.myScore}`;
+
 const banner = document.getElementById('winner-banner');
 const winnerText = document.getElementById('winner-text');
 const winnerSub = document.getElementById('winner-sub');
+const nextBtn = document.getElementById('next-round-btn');
+const guestWait = document.getElementById('guest-wait-text');
 
 if (result.winner === localPlayer) {
 winnerText.textContent = 'YOU WIN!';
@@ -450,37 +562,70 @@ winnerText.setAttribute('fill', '#4ecdc4');
 winnerText.textContent = 'OPPONENT WINS';
 winnerText.setAttribute('fill', '#ff6b6b');
 }
-winnerSub.textContent = result.reactionTime > 0 ? `${result.reactionTime}ms` : 'Fast reaction!';
+winnerSub.textContent = result.reactionTime > 0 && result.reactionTime < 5000 ? `${result.reactionTime}ms` : 'Fast reaction!';
+
+if (playerRole === 'host') {
+nextBtn.setAttribute('display', 'block');
+guestWait.setAttribute('display', 'none');
+} else {
+nextBtn.setAttribute('display', 'none');
+guestWait.setAttribute('display', 'block');
+}
 banner.setAttribute('display', 'block');
 }
 
 window.nextRound = function() {
 document.getElementById('winner-banner').setAttribute('display', 'none');
+if (playerRole !== 'host') return;
+
 gameState.round++;
 if (gameState.myScore >= 4 || gameState.oppScore >= 4 || gameState.round > gameState.maxRounds) {
-showMatchOver();
+window.firebaseUpdate(roomRef, {
+status: 'match_end',
+result: {
+p1Score: gameState.myScore,
+p2Score: gameState.oppScore
+}
+});
+showMatchOver({ result: { p1Score: gameState.myScore, p2Score: gameState.oppScore } });
 } else {
+const startAt = Date.now() + 2000;
 gameState.phase = 'countdown';
-if (playerRole === 'host') {
+gameState.userInput = [];
+gameState.selected = [];
+gameState.pattern = [];
+gameArea.innerHTML = '';
 window.firebaseUpdate(roomRef, {
 status: 'playing',
-gameState: { ...gameState, phase: 'countdown' }
-});
+gameState: {
+mode: gameState.mode,
+round: gameState.round,
+phase: 'countdown',
+p1Score: gameState.myScore,
+p2Score: gameState.oppScore,
+startAt: startAt
 }
+});
 }
 };
 
 function showMatchOver(data) {
 showScreen('match-over');
-const p1Wins = data && data.result ? data.result.p1Wins : gameState.myScore;
-const p2Wins = data && data.result ? data.result.p2Wins : gameState.oppScore;
+const p1Score = data && data.result ? data.result.p1Score : 0;
+const p2Score = data && data.result ? data.result.p2Score : 0;
+
 let text = '';
 if (localPlayer === 1) {
-text = p1Wins > p2Wins ? `🏆 YOU WIN ${p1Wins}-${p2Wins}` : `💔 YOU LOSE ${p1Wins}-${p2Wins}`;
+if(p1Score > p2Score) text = `🏆 YOU WIN ${p1Score}-${p2Score}`;
+else if(p1Score < p2Score) text = `💔 YOU LOSE ${p1Score}-${p2Score}`;
+else text = `🤝 DRAW ${p1Score}-${p2Score}`;
 } else {
-text = p2Wins > p1Wins ? `🏆 YOU WIN ${p2Wins}-${p1Wins}` : `💔 YOU LOSE ${p2Wins}-${p1Wins}`;
+if(p2Score > p1Score) text = `🏆 YOU WIN ${p2Score}-${p1Score}`;
+else if(p2Score < p1Score) text = `💔 YOU LOSE ${p2Score}-${p1Score}`;
+else text = `🤝 DRAW ${p2Score}-${p1Score}`;
 }
 document.getElementById('match-winner').textContent = text;
+document.getElementById('final-stats').textContent = `Final Score — P1: ${p1Score} | P2: ${p2Score}`;
 }
 
 // ===== GAME MODES =====
@@ -500,6 +645,7 @@ function startMemoryRace() {
 const size = 4;
 const length = 4 + Math.floor(gameState.round / 2);
 gameState.pattern = [];
+gameState.userInput = [];
 const used = new Set();
 while (gameState.pattern.length < length) {
 const r = randInt(0, size - 1);
@@ -513,14 +659,15 @@ gameState.pattern.push({ r, c });
 
 const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 centerText.setAttribute('x', '300');
-centerText.setAttribute('y', '300');
+centerText.setAttribute('y', '140');
 centerText.setAttribute('text-anchor', 'middle');
 centerText.setAttribute('fill', '#ffe66d');
-centerText.setAttribute('font-size', '18');
-centerText.textContent = 'WATCH...';
+centerText.setAttribute('font-size', '20');
+centerText.textContent = 'WATCH THE PATTERN...';
+centerText.setAttribute('id', 'memory-instruction');
 gameArea.appendChild(centerText);
 
-createPlayerGrid(size, 150);
+createPlayerGrid(size, 180);
 
 let idx = 0;
 const showNext = () => {
@@ -535,7 +682,7 @@ centerText.setAttribute('fill', '#4ecdc4');
 gameState.phase = 'input';
 }
 };
-setTimeout(showNext, 500);
+setTimeout(showNext, 800);
 }
 
 // ===== MATH BLITZ =====
@@ -549,6 +696,8 @@ for (let i = 0; i < 16; i++) nums.push(randInt(1, 12));
 const combo = [randInt(0, 15), randInt(0, 15)];
 nums[combo[0]] = randInt(1, target - 1);
 nums[combo[1]] = target - nums[combo[0]];
+gameState.gridNumbers = nums;
+gameState.selected = [];
 
 const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 centerText.setAttribute('x', '300');
@@ -560,7 +709,7 @@ centerText.setAttribute('font-weight', 'bold');
 centerText.textContent = `TARGET: ${target}`;
 gameArea.appendChild(centerText);
 
-createPlayerGrid(size, 200, nums);
+createPlayerGrid(size, 180, nums);
 gameState.phase = 'input';
 }
 
@@ -569,32 +718,46 @@ function startColorWar() {
 const size = 5;
 const colors = ['#ff6b6b', '#64d8ff', '#ffe66d', '#4ecdc4', '#ff8b94', '#c7ceea'];
 gameState.colorGrid = [];
+gameState.playerColorGrid = [];
 for (let r = 0; r < size; r++) {
 gameState.colorGrid[r] = [];
-for (let c = 0; c < size; c++) gameState.colorGrid[r][c] = randInt(0, colors.length - 1);
+gameState.playerColorGrid[r] = [];
+for (let c = 0; c < size; c++) {
+gameState.colorGrid[r][c] = randInt(0, colors.length - 1);
+gameState.playerColorGrid[r][c] = -1;
+}
 }
 
 const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 centerText.setAttribute('x', '300');
-centerText.setAttribute('y', '150');
+centerText.setAttribute('y', '130');
 centerText.setAttribute('text-anchor', 'middle');
 centerText.setAttribute('fill', '#ffe66d');
-centerText.setAttribute('font-size', '16');
-centerText.textContent = 'MEMORIZE!';
+centerText.setAttribute('font-size', '18');
+centerText.textContent = 'MEMORIZE THE PATTERN!';
+centerText.setAttribute('id', 'colorwar-instruction');
 gameArea.appendChild(centerText);
 
-createPlayerGrid(size, 200);
+createColorGrid(size, 180, gameState.colorGrid, colors);
 
 setTimeout(() => {
-centerText.textContent = 'RECREATE IT!';
+centerText.textContent = 'RECREATE IT! CLICK TO CYCLE';
 centerText.setAttribute('fill', '#4ecdc4');
 gameState.phase = 'input';
+for (let r = 0; r < size; r++) {
+for (let c = 0; c < size; c++) {
+const rect = document.getElementById(`cell-${r}-${c}`);
+if (rect) rect.setAttribute('fill', '#0f1830');
+}
+}
 }, 3000);
 }
 
 // ===== REACTION DUEL =====
 function startReactionDuel() {
 gameState.reactionState = 'wait';
+gameState.early = false;
+
 const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
 rect.setAttribute('x', '50');
 rect.setAttribute('y', '200');
@@ -604,7 +767,7 @@ rect.setAttribute('rx', '20');
 rect.setAttribute('fill', '#ff4444');
 rect.setAttribute('id', 'react-box');
 rect.style.cursor = 'pointer';
-rect.addEventListener('click', () => handleReaction());
+rect.addEventListener('click', handleReaction);
 gameArea.appendChild(rect);
 
 const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -612,27 +775,62 @@ label.setAttribute('x', '300');
 label.setAttribute('y', '360');
 label.setAttribute('text-anchor', 'middle');
 label.setAttribute('fill', '#fff');
-label.setAttribute('font-size', '24');
+label.setAttribute('font-size', '28');
 label.setAttribute('font-weight', 'bold');
 label.setAttribute('id', 'react-label');
-label.textContent = 'WAIT...';
+label.textContent = 'WAIT FOR GREEN...';
 gameArea.appendChild(label);
 
 const waitTime = randInt(2000, 5000);
-setTimeout(() => {
+gameState.reactionTimer = setTimeout(() => {
+if (gameState.reactionState !== 'wait') return;
 gameState.reactionState = 'go';
-document.getElementById('react-box').setAttribute('fill', '#44ff44');
-document.getElementById('react-label').textContent = 'TAP NOW!';
+const box = document.getElementById('react-box');
+const lbl = document.getElementById('react-label');
+if (box) box.setAttribute('fill', '#44ff44');
+if (lbl) lbl.textContent = 'TAP NOW!';
 gameState.reactionStartTime = Date.now();
+
+gameState.reactionFallback = setTimeout(() => {
+if (gameState.reactionState === 'go' && !gameState.early) {
+reportWin(6000);
+}
+}, 6000);
 }, waitTime);
 }
 
 function handleReaction() {
+if (gameState.reactionState === 'done') return;
+
 if (gameState.reactionState === 'wait') {
-reportWin(9999);
+clearTimeout(gameState.reactionTimer);
+gameState.reactionState = 'done';
+gameState.early = true;
+const box = document.getElementById('react-box');
+const lbl = document.getElementById('react-label');
+if (box) {
+box.setAttribute('fill', '#880000');
+box.style.cursor = 'default';
+}
+if (lbl) {
+lbl.textContent = 'TOO EARLY! YOU LOSE';
+lbl.setAttribute('fill', '#ff4444');
+}
+// Do not report win — let opponent win or fallback fire
 } else if (gameState.reactionState === 'go') {
+clearTimeout(gameState.reactionFallback);
 const reactionTime = Date.now() - gameState.reactionStartTime;
 gameState.reactionState = 'done';
+const box = document.getElementById('react-box');
+const lbl = document.getElementById('react-label');
+if (box) {
+box.setAttribute('fill', '#4ecdc4');
+box.style.cursor = 'default';
+}
+if (lbl) {
+lbl.textContent = `${reactionTime}ms`;
+lbl.setAttribute('fill', '#fff');
+}
 reportWin(reactionTime);
 }
 }
@@ -678,6 +876,33 @@ gameArea.appendChild(g);
 }
 }
 
+function createColorGrid(size, startY, colorGrid, colors) {
+const cellW = 400 / size;
+const cellH = 400 / size;
+
+for (let r = 0; r < size; r++) {
+for (let c = 0; c < size; c++) {
+const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+g.setAttribute('transform', `translate(${100 + c * cellW}, ${startY + r * cellH})`);
+g.style.cursor = 'pointer';
+g.classList.add('cell');
+
+const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+rect.setAttribute('width', cellW - 4);
+rect.setAttribute('height', cellH - 4);
+rect.setAttribute('rx', '6');
+rect.setAttribute('fill', colors[colorGrid[r][c]]);
+rect.setAttribute('stroke', '#3a6a9f');
+rect.setAttribute('stroke-width', '1.5');
+rect.setAttribute('id', `cell-${r}-${c}`);
+g.appendChild(rect);
+
+g.addEventListener('click', () => handleColorCellClick(r, c, colors, size));
+gameArea.appendChild(g);
+}
+}
+}
+
 function highlightCell(r, c, color, duration) {
 const rect = document.getElementById(`cell-${r}-${c}`);
 if (!rect) return;
@@ -691,11 +916,12 @@ setTimeout(() => rect.setAttribute('fill', orig), duration);
 function handleCellClick(r, c, size) {
 const mode = gameState.mode;
 if (mode === 'memory_race') {
-gameState.userInput = gameState.userInput || [];
+if (gameState.phase !== 'input') return;
 gameState.userInput.push({ r, c });
 highlightCell(r, c, '#64d8ff', 300);
 checkMemoryInput();
 } else if (mode === 'math_blitz') {
+if (gameState.phase !== 'input') return;
 const idx = r * size + c;
 gameState.selected = gameState.selected || [];
 const pos = gameState.selected.indexOf(idx);
@@ -703,14 +929,12 @@ if (pos > -1) gameState.selected.splice(pos, 1);
 else gameState.selected.push(idx);
 highlightCell(r, c, gameState.selected.includes(idx) ? '#64d8ff' : '#0f1830', 0);
 checkMathSum();
-} else if (mode === 'color_war') {
-cycleColor(r, c);
 }
 }
 
 function checkMemoryInput() {
 const input = gameState.userInput || [];
-if (input.length === gameState.pattern.length) {
+if (input.length !== gameState.pattern.length) return;
 let correct = true;
 for (let i = 0; i < gameState.pattern.length; i++) {
 if (input[i].r !== gameState.pattern[i].r || input[i].c !== gameState.pattern[i].c) {
@@ -720,21 +944,49 @@ break;
 }
 if (correct) reportWin();
 }
-}
 
 function checkMathSum() {
 const selected = gameState.selected || [];
-const sum = selected.reduce((s, idx) => s + gameState.userInput[idx], 0);
+if (!gameState.gridNumbers) return;
+const sum = selected.reduce((s, idx) => s + gameState.gridNumbers[idx], 0);
 if (sum === gameState.target) reportWin();
 }
 
-function cycleColor(r, c) {
-const colors = ['#0f1830', '#ff6b6b', '#64d8ff', '#ffe66d', '#4ecdc4'];
+function handleColorCellClick(r, c, colors, size) {
+if (gameState.phase !== 'input') return;
 const rect = document.getElementById(`cell-${r}-${c}`);
-const current = colors.indexOf(rect.getAttribute('fill'));
-const next = (current + 1) % colors.length;
-rect.setAttribute('fill', colors[next]);
+const currentFill = rect.getAttribute('fill');
+let currentIdx = colors.indexOf(currentFill);
+if (currentIdx === -1) currentIdx = -1;
+const nextIdx = (currentIdx + 1) % colors.length;
+rect.setAttribute('fill', colors[nextIdx]);
+gameState.playerColorGrid[r][c] = nextIdx;
+checkColorWarWin();
 }
+
+function checkColorWarWin() {
+let correct = true;
+const size = gameState.colorGrid.length;
+for (let r = 0; r < size; r++) {
+for (let c = 0; c < size; c++) {
+if (gameState.playerColorGrid[r][c] !== gameState.colorGrid[r][c]) {
+correct = false;
+break;
+}
+}
+if (!correct) break;
+}
+if (correct) reportWin();
+}
+
+// Cleanup on page close
+window.addEventListener('beforeunload', () => {
+if (playerRole === 'host' && roomRef) {
+window.firebaseRemove(roomRef);
+} else if (playerRole === 'guest' && roomRef) {
+window.firebaseUpdate(roomRef, { guest: false });
+}
+});
 </script>
 </body>
 </html>
