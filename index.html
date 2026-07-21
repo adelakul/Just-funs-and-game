@@ -20,6 +20,10 @@ svg{width:100%;height:100%;display:block;border-radius:16px;box-shadow:0 0 80px 
 .shake{animation:shake 0.5s ease-in-out}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .float{animation:float 3s ease-in-out infinite}
+#music-player{position:fixed;bottom:15px;right:15px;background:rgba(10,16,32,0.95);border:2px solid #64d8ff;border-radius:12px;padding:10px 15px;font-family:'Courier New',monospace;font-size:12px;color:#8899aa;z-index:1000;max-width:250px}
+#music-player button{background:#1e3a5f;border:1px solid #64d8ff;color:#64d8ff;padding:6px 10px;margin:5px 2px 0 0;border-radius:6px;cursor:pointer;font-size:11px;font-weight:bold}
+#music-player button:hover{background:#3a5a7f;filter:brightness(1.2)}
+#song-title{color:#64d8ff;font-weight:bold;margin-bottom:5px;font-size:11px}
 </style>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -57,7 +61,8 @@ window.firebaseOnDisconnect = onDisconnect;
 </defs>
 <rect width="1200" height="675" fill="url(#bg-grad)" rx="16"/>
 <g stroke="#1e2a4f" stroke-width="0.5" opacity="0.15">
-<line x1="0" y1="112.5" x2="1200" y2="112.5"/><line x1="0" y1="225" x2="1200" y2="225"/><line x1="0" y1="337.5" x2="1200" y2="337.5"/><line x1="0" y1="450" x2="1200" y2="450"/><line x1="0" y1="562.5" x2="1200" y2="562.5"/><line x1="300" y1="0" x2="300" y2="675"/><line x1="600" y1="0" x2="600" y2="675"/><line x1="900" y1="0" x2="900" y2="675"/>
+<line x1="0" y1="112.5" x2="1200" y2="112.5"/><line x1="0" y1="225" x2="1200" y2="225"/><line x1="0" y1="337.5" x2="1200" y2="337.5"/><line x1="0" y1="450" x2="1200" y2="450"/><line x1="0" y1="562.5" x2="1200" y2="562.5"/>
+<line x1="150" y1="0" x2="150" y2="675"/><line x1="300" y1="0" x2="300" y2="675"/><line x1="450" y1="0" x2="450" y2="675"/><line x1="600" y1="0" x2="600" y2="675"/><line x1="750" y1="0" x2="750" y2="675"/><line x1="900" y1="0" x2="900" y2="675"/><line x1="1050" y1="0" x2="1050" y2="675"/>
 </g>
 
 <!-- TITLE SCREEN -->
@@ -73,7 +78,7 @@ window.firebaseOnDisconnect = onDisconnect;
 <g class="btn" onclick="showHowToPlay()"><rect x="420" y="410" width="360" height="36" rx="18" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="600" y="435" text-anchor="middle" fill="#ffe66d" font-size="14">📖 HOW TO PLAY</text></g>
 <text x="600" y="465" text-anchor="middle" fill="#556677" font-size="13">📱 Share the room code — both players tap to play!</text>
 <text x="600" y="485" text-anchor="middle" fill="#445566" font-size="11">Optimized for phones — just tap cells directly!</text>
-<text x="600" y="575" text-anchor="middle" fill="#445566" font-size="10">🎵 Now Playing: Stray Kids — Run It</text>
+<text x="600" y="575" text-anchor="middle" fill="#4ecdc4" font-size="10" id="now-playing">🎵 Now Playing: Loading...</text>
 <text x="600" y="600" text-anchor="middle" fill="#ffaa44" font-size="14" id="connection-status">⚠️ Firebase not configured — see setup instructions in code</text>
 </g>
 
@@ -90,15 +95,15 @@ window.firebaseOnDisconnect = onDisconnect;
 <g id="mode-select" display="none">
 <text x="600" y="70" text-anchor="middle" fill="#64d8ff" font-family="'Courier New',monospace" font-size="28" font-weight="bold">SELECT DUEL MODE</text>
 <text x="600" y="95" text-anchor="middle" fill="#8899aa" font-size="13" id="mode-select-room">Room: ----</text>
-<g class="btn" onclick="hostSelectMode('memory_race')"><rect x="80" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/><text x="200" y="145" text-anchor="middle" fill="#64d8ff" font-size="18" font-weight="bold">🧠 MEMORY</text><text x="200" y="170" text-anchor="middle" fill="#8899aa" font-size="12">Repeat pattern!</text></g>
-<g class="btn" onclick="hostSelectMode('math_blitz')"><rect x="350" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#ff6b6b" stroke-width="2"/><text x="470" y="145" text-anchor="middle" fill="#ff6b6b" font-size="18" font-weight="bold">🔢 MATH</text><text x="470" y="170" text-anchor="middle" fill="#8899aa" font-size="12">Solve faster!</text></g>
-<g class="btn" onclick="hostSelectMode('color_war')"><rect x="620" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="740" y="145" text-anchor="middle" fill="#ffe66d" font-size="18" font-weight="bold">🎨 COLOR</text><text x="740" y="170" text-anchor="middle" fill="#8899aa" font-size="12">Match colors!</text></g>
-<g class="btn" onclick="hostSelectMode('reaction_duel')"><rect x="890" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#4ecdc4" stroke-width="2"/><text x="1010" y="145" text-anchor="middle" fill="#4ecdc4" font-size="18" font-weight="bold">⚡ REACTION</text><text x="1010" y="170" text-anchor="middle" fill="#8899aa" font-size="12">Fastest wins!</text></g>
-<g class="btn" onclick="hostSelectMode('sequence_battle')"><rect x="80" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#a8e6cf" stroke-width="2"/><text x="200" y="255" text-anchor="middle" fill="#a8e6cf" font-size="18" font-weight="bold">🔗 SEQUENCE</text><text x="200" y="280" text-anchor="middle" fill="#8899aa" font-size="12">Build chains!</text></g>
-<g class="btn" onclick="hostSelectMode('spatial_clash')"><rect x="350" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#c7ceea" stroke-width="2"/><text x="470" y="255" text-anchor="middle" fill="#c7ceea" font-size="18" font-weight="bold">🔄 SPATIAL</text><text x="470" y="280" text-anchor="middle" fill="#8899aa" font-size="12">Mirror it!</text></g>
-<g class="btn" onclick="hostSelectMode('word_sprint')"><rect x="620" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#ff8b94" stroke-width="2"/><text x="740" y="255" text-anchor="middle" fill="#ff8b94" font-size="18" font-weight="bold">📝 WORDS</text><text x="740" y="280" text-anchor="middle" fill="#8899aa" font-size="12">Spell fast!</text></g>
-<g class="btn" onclick="hostSelectMode('logic_faceoff')"><rect x="890" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#ffd93d" stroke-width="2"/><text x="1010" y="255" text-anchor="middle" fill="#ffd93d" font-size="18" font-weight="bold">🧩 LOGIC</text><text x="1010" y="280" text-anchor="middle" fill="#8899aa" font-size="12">Deduce!</text></g>
-<g class="btn" onclick="hostSelectMode('mixed_mayhem')"><rect x="300" y="340" width="600" height="70" rx="12" fill="#1a0a30" stroke="#ff44ff" stroke-width="3"/><text x="600" y="370" text-anchor="middle" fill="#ff44ff" font-size="20" font-weight="bold">🎲 MIXED MAYHEM - Random Mode!</text></g>
+<g class="btn" onclick="hostSelectMode('memory_race')"><rect x="80" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#64d8ff" stroke-width="2"/><text x="200" y="145" text-anchor="middle" fill="#64d8ff" font-size="18" font-weight="bold">MEMORY RACE</text><text x="200" y="165" text-anchor="middle" fill="#8899aa" font-size="12">Repeat the pattern first!</text></g>
+<g class="btn" onclick="hostSelectMode('math_blitz')"><rect x="350" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#ff6b6b" stroke-width="2"/><text x="470" y="145" text-anchor="middle" fill="#ff6b6b" font-size="18" font-weight="bold">MATH BLITZ</text><text x="470" y="165" text-anchor="middle" fill="#8899aa" font-size="12">Solve equations faster!</text></g>
+<g class="btn" onclick="hostSelectMode('color_war')"><rect x="620" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#ffe66d" stroke-width="2"/><text x="740" y="145" text-anchor="middle" fill="#ffe66d" font-size="18" font-weight="bold">COLOR WAR</text><text x="740" y="165" text-anchor="middle" fill="#8899aa" font-size="12">Claim the most territory!</text></g>
+<g class="btn" onclick="hostSelectMode('reaction_duel')"><rect x="890" y="115" width="240" height="90" rx="10" fill="#0f1830" stroke="#4ecdc4" stroke-width="2"/><text x="1010" y="145" text-anchor="middle" fill="#4ecdc4" font-size="18" font-weight="bold">REACTION DUEL</text><text x="1010" y="165" text-anchor="middle" fill="#8899aa" font-size="12">Click when green!</text></g>
+<g class="btn" onclick="hostSelectMode('sequence_battle')"><rect x="80" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#a8e6cf" stroke-width="2"/><text x="200" y="255" text-anchor="middle" fill="#a8e6cf" font-size="18" font-weight="bold">SEQUENCE</text><text x="200" y="275" text-anchor="middle" fill="#8899aa" font-size="12">Build longer chains!</text></g>
+<g class="btn" onclick="hostSelectMode('spatial_clash')"><rect x="350" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#c7ceea" stroke-width="2"/><text x="470" y="255" text-anchor="middle" fill="#c7ceea" font-size="18" font-weight="bold">SPATIAL CLASH</text><text x="470" y="275" text-anchor="middle" fill="#8899aa" font-size="12">Mirror the pattern!</text></g>
+<g class="btn" onclick="hostSelectMode('word_sprint')"><rect x="620" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#ff8b94" stroke-width="2"/><text x="740" y="255" text-anchor="middle" fill="#ff8b94" font-size="18" font-weight="bold">WORD SPRINT</text><text x="740" y="275" text-anchor="middle" fill="#8899aa" font-size="12">Type words quickly!</text></g>
+<g class="btn" onclick="hostSelectMode('logic_faceoff')"><rect x="890" y="225" width="240" height="90" rx="10" fill="#0f1830" stroke="#ffd93d" stroke-width="2"/><text x="1010" y="255" text-anchor="middle" fill="#ffd93d" font-size="18" font-weight="bold">LOGIC FACEOFF</text><text x="1010" y="275" text-anchor="middle" fill="#8899aa" font-size="12">Deduce the rule!</text></g>
+<g class="btn" onclick="hostSelectMode('mixed_mayhem')"><rect x="300" y="340" width="600" height="70" rx="12" fill="#1a0a30" stroke="#ff44ff" stroke-width="3"/><text x="600" y="370" text-anchor="middle" fill="#ff44ff" font-size="20" font-weight="bold">🎲 MIXED MAYHEM — All modes in random order!</text></g>
 <text x="600" y="460" text-anchor="middle" fill="#445566" font-size="12">Only the host (Player 1) can select the mode</text>
 </g>
 
@@ -146,8 +151,8 @@ window.firebaseOnDisconnect = onDisconnect;
 <text id="match-winner" x="600" y="250" text-anchor="middle" fill="#64d8ff" font-size="32"></text>
 <text id="final-stats" x="600" y="300" text-anchor="middle" fill="#8899aa" font-size="18"></text>
 <text id="match-rank" x="600" y="340" text-anchor="middle" fill="#ffaa44" font-size="22"></text>
-<g class="btn" onclick="showModeSelect()"><rect x="350" y="400" width="220" height="50" rx="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="460" y="432" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">PLAY AGAIN</text></g>
-<g class="btn" onclick="showTitle()"><rect x="630" y="400" width="220" height="50" rx="25" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="740" y="432" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="bold">MAIN MENU</text></g>
+<g class="btn" onclick="showModeSelect()"><rect x="350" y="400" width="220" height="50" rx="25" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="460" y="432" text-anchor="middle" fill="#64d8ff" font-size="14" font-weight="bold">PLAY AGAIN</text></g>
+<g class="btn" onclick="showTitle()"><rect x="630" y="400" width="220" height="50" rx="25" fill="#5f1a2a" stroke="#ff6b6b" stroke-width="2"/><text x="740" y="432" text-anchor="middle" fill="#ff6b6b" font-size="14" font-weight="bold">MAIN MENU</text></g>
 </g>
 
 <!-- DISCONNECTED -->
@@ -155,7 +160,7 @@ window.firebaseOnDisconnect = onDisconnect;
 <rect width="1200" height="675" fill="#050814" opacity="0.95" rx="16"/>
 <text x="600" y="300" text-anchor="middle" fill="#ff6b6b" font-size="36" font-weight="bold">OPPONENT DISCONNECTED</text>
 <text x="600" y="350" text-anchor="middle" fill="#8899aa" font-size="18">Your opponent left the duel.</text>
-<g class="btn" onclick="showTitle()"><rect x="450" y="400" width="300" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="600" y="432" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">BACK TO MENU</text></g>
+<g class="btn" onclick="showTitle()"><rect x="450" y="400" width="300" height="50" rx="10" fill="#1e3a5f" stroke="#64d8ff" stroke-width="2"/><text x="600" y="432" text-anchor="middle" fill="#64d8ff" font-size="16" font-weight="bold">RETURN HOME</text></g>
 </g>
 
 <!-- HOW TO PLAY OVERLAY -->
@@ -196,7 +201,60 @@ window.firebaseOnDisconnect = onDisconnect;
 </svg>
 </div>
 
+<!-- MUSIC PLAYER -->
+<div id="music-player">
+<div id="song-title">🎵 Stray Kids</div>
+<audio id="bg-music" style="width:100%;height:24px;margin:5px 0" controls>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+<div style="margin-top:8px;color:#a0a8ff;font-size:10px" id="playlist-info">Click for more songs →</div>
+<button onclick="playPlaylist()">▶ Play Mix</button>
+<button onclick="toggleMute()">🔊 Mute</button>
+</div>
+
 <script>
+// ===== MUSIC PLAYLIST =====
+const playlist = [
+{title: 'Run It', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
+{title: 'God\'s Menu', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'},
+{title: 'MANIAC', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'},
+{title: 'S-Class', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'},
+{title: 'Back Door', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'}
+];
+let currentSongIndex = 0;
+const bgMusic = document.getElementById('bg-music');
+const nowPlayingEl = document.getElementById('now-playing');
+const songTitleEl = document.getElementById('song-title');
+
+function updateSongDisplay(){
+const song = playlist[currentSongIndex];
+const title = `🎵 ${song.title}`;
+nowPlayingEl.textContent = `🎵 Now Playing: Stray Kids — ${song.title}`;
+songTitleEl.textContent = title;
+}
+
+function playPlaylist(){
+bgMusic.src = playlist[currentSongIndex].url;
+bgMusic.play();
+updateSongDisplay();
+}
+
+function nextSong(){
+currentSongIndex = (currentSongIndex + 1) % playlist.length;
+playPlaylist();
+}
+
+function toggleMute(){
+bgMusic.muted = !bgMusic.muted;
+}
+
+bgMusic.addEventListener('ended', nextSong);
+setTimeout(() => {
+updateSongDisplay();
+playPlaylist();
+}, 500);
+
 // ===== GLOBALS =====
 let db = null, roomRef = null, roomCode = '', playerRole = null, localPlayer = 1;
 let opponentConnected = false, roomUnsubscribe = null;
